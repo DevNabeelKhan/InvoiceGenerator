@@ -27,39 +27,58 @@
 <div class="sidebar-backdrop" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-<aside class="main-sidebar shadow-lg" [ngClass]="{ 'sidebar-collapsed': !sidebarOpen }">
-  <section class="sidebar">
+<aside class="app-main-sidebar shadow-lg" [ngClass]="{ 'sidebar-collapsed': !sidebarOpen }">
+  <section class="app-sidebar-body">
 
     <div class="sidebar-brand">
       <i class="fa-solid fa-file-invoice-dollar brand-icon"></i>
       <span>InvoiceGen</span>
     </div>
 
-    <ul class="nav flex-column">
+    <div class="sidebar-nav-scroll">
+      <ul class="nav flex-column">
 
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-        </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+          </li>
 
-        <li class="nav-section-title">Sales</li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/customers" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-users"></i> Customers</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/beneficiaries" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-hand-holding-dollar"></i> Beneficiaries</a>
-        </li>
+          <li class="nav-section-title">Sales</li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/customers" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-users"></i> Customers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/beneficiaries" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-hand-holding-dollar"></i> Beneficiaries</a>
+          </li>
 
-        <li class="nav-section-title">Inventory</li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/products" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-boxes-stacked"></i> Products</a>
-        </li>
+          <li class="nav-section-title">Inventory</li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/products" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-boxes-stacked"></i> Products</a>
+          </li>
 
-        <li class="nav-section-title" *ngIf="user.roleId !== 1">Settings</li>
-        <li class="nav-item" *ngIf="user.roleId !== 1">
-          <a class="nav-link" routerLink="/user" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-user"></i> User</a>
-        </li>
+          <li class="nav-section-title">Settings</li>
+          <li class="nav-item" *ngIf="user.roleId !== 1">
+            <a class="nav-link" routerLink="/user" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-user"></i> User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link submenu-toggle" href="javascript:;" (click)="toggleConfigMenu()"
+               [class.active]="router.url.startsWith('/configuration')">
+              <i class="fa-solid fa-gears"></i> Configuration
+              <i class="fa-solid fa-chevron-down submenu-caret" [class.rotated]="configOpen"></i>
+            </a>
+            <ul class="nav flex-column submenu" [class.open]="configOpen">
+              <li class="nav-item" *ngFor="let cfg of configurationTypes">
+                <a class="nav-link" [routerLink]="['/configuration', cfg.slug]" routerLinkActive="active"
+                   (click)="closeSidebarOnMobile()">
+                  <i [class]="cfg.icon"></i> {{ cfg.title }}
+                </a>
+              </li>
+            </ul>
+          </li>
+      </ul>
+    </div>
 
-      <li class="nav-item mt-4">
+    <ul class="nav flex-column app-sidebar-footer">
+      <li class="nav-item">
         <a class="nav-link text-danger" href="javascript:;" (click)="logout()">
           <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
         </a>

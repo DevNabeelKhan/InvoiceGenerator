@@ -1,24 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { StorageService } from '../../../services/local-storage.service';
 import { AlertService } from '../../../services/alert.service';
+import { CONFIGURATION_TYPES } from '../models/configuration.model';
 
 @Component({
   selector: 'app-side-bar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './side-bar.component.html',
   styleUrl: './side-bar.component.css'
 })
 export class SideBarComponent {
 
   sidebarOpen = true;
+  configOpen = false;
   user: any = {};
+  configurationTypes = CONFIGURATION_TYPES;
 
   
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  toggleConfigMenu() {
+    this.configOpen = !this.configOpen;
   }
 
   closeSidebarOnMobile() {

@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>{{ selectedId ? 'Edit' : 'Add' }} {{ typeInfo.singular }}</h2>
+<mat-dialog-content>
+    <form #form="ngForm">
+        <div class="mb-3">
+            <label class="mb-1">{{ typeInfo.singular }} Title <span class="text-danger">*</span></label>
+            <div class="form-group">
+                <input type="text" name="Title" [(ngModel)]="itemModel.Title" class="form-control"
+                    [placeholder]="'Enter ' + typeInfo.singular + ' Title'" required autofocus>
+            </div>
+        </div>
+
+        <div class="mb-1" *ngIf="selectedId">
+            <label class="mb-1">Status</label>
+            <div class="form-group">
+                <select class="form-select" name="IsActive" [(ngModel)]="itemModel.IsActive">
+                    <option [ngValue]="true">Active</option>
+                    <option [ngValue]="false">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="div-right">
+        <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+    </div>
+</mat-dialog-actions>

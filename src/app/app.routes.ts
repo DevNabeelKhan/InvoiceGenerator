@@ -33,6 +33,10 @@ export const routes: Routes = [
     {
         path: 'products',
         loadComponent: () => import('./admin/products/products.component').then(m => m.ProductsComponent), canActivate: [AuthGuard],
+    },
+    {
+        path: 'configuration/:type',
+        loadComponent: () => import('./admin/configuration/configuration-list/configuration-list.component').then(m => m.ConfigurationListComponent), canActivate: [AuthGuard],
     }
 
   

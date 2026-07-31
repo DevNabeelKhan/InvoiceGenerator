@@ -1,0 +1,83 @@
+<div class="content-wrapper ms-4">
+    <div class="container-full">
+        <section class="content">
+
+            <div class="module-page-card">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h3 class="module-title">{{ typeInfo?.title }}</h3>
+                        <p class="module-subtitle">Manage {{ typeInfo?.title | lowercase }} used across the system</p>
+                    </div>
+                    <div class="module-toolbar">
+                        <div class="module-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Search..." [(ngModel)]="searchText"
+                                (ngModelChange)="onSearchChange()" />
+                        </div>
+                        <select class="module-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+                            <option value="">All Status</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                        <a href="javascript:;" (click)="openAddEditModal()" class="btn-primary-pill">
+                            <i class="fa fa-plus"></i> Add {{ typeInfo?.singular }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-table-card">
+                <table class="module-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">S.No</th>
+                            <th>Title</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 90px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="isLoading">
+                            <td colspan="4" class="module-loading-state">Loading...</td>
+                        </tr>
+
+                        <tr *ngIf="!isLoading && !items?.length">
+                            <td colspan="4" class="module-empty-state">No records found</td>
+                        </tr>
+
+                        <tr *ngFor="let item of items; let i = index;">
+                            <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+                            <td class="fw-600">{{ item.Title }}</td>
+                            <td>
+                                <span class="status-pill" [ngClass]="item.IsActive ? 'active' : 'inactive'">
+                                    {{ item.IsActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="javascript:;" (click)="openAddEditModal(item.Id!)"
+                                    class="row-action-btn" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="javascript:;" (click)="openDeleteModal(item.Id!)"
+                                    class="row-action-btn danger" title="Delete"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="module-pagination-bar" *ngIf="!isLoading && items?.length">
+                    <span>Showing {{ (pageNumber - 1) * pageSize + 1 }}-{{ (pageNumber - 1) * pageSize + items.length }} of {{ totalRecords }} entries</span>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="pager-btn" [disabled]="pageNumber <= 1" (click)="goToPage(pageNumber - 1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button *ngFor="let p of pageNumbers" class="pager-btn"
+                            [class.active-page]="p === pageNumber" (click)="goToPage(p)">{{ p }}</button>
+                        <button class="pager-btn" [disabled]="pageNumber >= totalPages" (click)="goToPage(pageNumber + 1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<router-outlet></router-outlet>
