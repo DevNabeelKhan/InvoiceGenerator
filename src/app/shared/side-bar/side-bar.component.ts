@@ -19,12 +19,20 @@ export class SideBarComponent {
   
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
-  } 
+  }
+
+  closeSidebarOnMobile() {
+    if (window.innerWidth < 992) {
+      this.sidebarOpen = false;
+    }
+  }
+
   constructor( 
     readonly storage: StorageService,
     readonly router: Router,
     readonly alert: AlertService,) { 
       this.user = this.storage.getItem('User');
+      this.sidebarOpen = window.innerWidth >= 992;
      }
     
   logout() {

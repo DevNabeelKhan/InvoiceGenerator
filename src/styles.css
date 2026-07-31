@@ -84,3 +84,348 @@ img.img-tble {
 }.relative-autoc-comple span {
     font-size: 15px !important;
 }
+
+/* ---- App shell offset for fixed sidebar/top bar ----
+   Using !important here deliberately: the legacy AdminLTE stylesheet
+   (assets/css/structure.css) ships several conflicting/higher-specificity
+   `.content-wrapper` rules (e.g. `.fixed .content-wrapper`) that fight over
+   margin/padding depending on body classes. Rather than patch that large
+   3rd-party file, we force our intended layout here. */
+.content-wrapper {
+    margin-left: 250px !important;
+    padding-top: 84px !important;
+    margin-top: 0 !important;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+    .content-wrapper {
+        margin-left: 0 !important;
+    }
+}
+
+/* ---- Shared module page theme (Customers / Beneficiaries / Products) ---- */
+.module-page-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+    margin-bottom: 16px;
+}
+
+.module-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #101828;
+    margin: 0;
+}
+
+.module-subtitle {
+    font-size: 13px;
+    color: #667085;
+    margin: 2px 0 0;
+}
+
+.module-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.module-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 230px;
+}
+
+.module-search i {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.module-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 13.5px;
+}
+
+.module-select {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13.5px;
+    background: #f9fafb;
+    color: #344054;
+}
+
+.btn-primary-pill {
+    background: #4f6ef7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-primary-pill:hover {
+    background: #3c58e0;
+    color: #fff;
+}
+
+.module-table-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+    overflow: hidden;
+}
+
+.module-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.module-table thead th {
+    background: #f9fafb;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eef0f3;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.module-table tbody td {
+    padding: 13px 16px;
+    font-size: 13.5px;
+    color: #344054;
+    border-bottom: 1px solid #f2f4f7;
+    vertical-align: middle;
+}
+
+.module-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.module-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.status-pill {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+.status-pill.active {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.status-pill.inactive {
+    background: #f2f4f7;
+    color: #667085;
+}
+
+.row-action-btn {
+    color: #667085;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+}
+
+.row-action-btn:hover {
+    background: #f2f4f7;
+    color: #101828;
+}
+
+.row-action-btn.danger:hover {
+    color: #d92d20;
+}
+
+.module-pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid #f2f4f7;
+    font-size: 13px;
+    color: #667085;
+}
+
+.module-pagination-bar .pager-btn {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #344054;
+}
+
+.module-pagination-bar .pager-btn:disabled {
+    color: #d0d5dd;
+    cursor: not-allowed;
+}
+
+.module-pagination-bar .pager-btn.active-page {
+    background: #4f6ef7;
+    border-color: #4f6ef7;
+    color: #fff;
+}
+
+.module-empty-state, .module-loading-state {
+    padding: 48px 16px;
+    text-align: center;
+    color: #667085;
+    font-size: 14px;
+}
+
+/* ---- Modern Add/Edit modal (Angular Material dialog) ---- */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 16px !important;
+    box-shadow: 0 24px 60px rgba(16, 24, 40, 0.28) !important;
+    overflow: hidden !important;
+}
+
+.mat-mdc-dialog-container h2[mat-dialog-title],
+.mat-mdc-dialog-container .mat-mdc-dialog-title {
+    padding: 20px 28px !important;
+    margin: 0 !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    color: #101828;
+    border-bottom: 1px solid #eef0f3;
+    line-height: normal !important;
+}
+
+.mat-mdc-dialog-container mat-dialog-content,
+.mat-mdc-dialog-container .mat-mdc-dialog-content {
+    padding: 22px 28px !important;
+    max-height: 72vh;
+    margin: 0 !important;
+}
+
+.mat-mdc-dialog-container mat-dialog-actions,
+.mat-mdc-dialog-container .mat-mdc-dialog-actions {
+    padding: 16px 28px !important;
+    margin: 0 !important;
+    border-top: 1px solid #eef0f3;
+    min-height: auto !important;
+}
+
+.mat-mdc-dialog-container label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #344054;
+}
+
+.mat-mdc-dialog-container .form-control,
+.mat-mdc-dialog-container .form-select {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    height: 42px;
+    font-size: 13.5px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mat-mdc-dialog-container textarea.form-control {
+    height: auto !important;
+    padding: 10px;
+}
+
+.mat-mdc-dialog-container .form-control:focus,
+.mat-mdc-dialog-container .form-select:focus {
+    border-color: #4f6ef7;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+}
+
+.div-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+}
+
+.mat-mdc-dialog-container .cmp-btn {
+    background: #4f6ef7 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 22px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+}
+
+.mat-mdc-dialog-container .cmp-btn:hover {
+    background: #3c58e0 !important;
+}
+
+.mat-mdc-dialog-container .cmp-btn:disabled {
+    background: #a7b3f5 !important;
+    cursor: not-allowed;
+}
+
+.mat-mdc-dialog-container .btn-outline-secondary {
+    border-radius: 8px !important;
+    padding: 9px 22px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+}
+
+/* ---- Dashboard ---- */
+.summary-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.summary-card .summary-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.summary-card .summary-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #101828;
+    margin: 0;
+}
+
+.summary-card .summary-label {
+    font-size: 12.5px;
+    color: #667085;
+    margin: 0;
+}

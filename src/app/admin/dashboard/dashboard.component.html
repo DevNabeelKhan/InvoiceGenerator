@@ -1,1 +1,123 @@
-<p>dashboard works!</p>
+<div class="content-wrapper ms-4">
+    <div class="container-full">
+        <section class="content">
+
+            <div class="module-page-card">
+                <h3 class="module-title">Dashboard</h3>
+                <p class="module-subtitle">Overview of your business at a glance</p>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-lg-3 col-md-6" *ngFor="let card of summaryCards">
+                    <a [routerLink]="card.route" class="text-decoration-none">
+                        <div class="summary-card">
+                            <div class="summary-icon" [style.background]="card.color">
+                                <i [class]="card.icon"></i>
+                            </div>
+                            <div>
+                                <p class="summary-value">{{ card.value }}</p>
+                                <p class="summary-label">{{ card.label }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-lg-8">
+                    <div class="module-page-card mb-0 h-100">
+                        <h5 class="module-title mb-3" style="font-size: 15px;">Revenue Trend (Last 7 Months)</h5>
+                        <ngx-charts-line-chart
+                            [view]="lineChartView"
+                            [results]="[{ name: 'Revenue', series: revenueTrend }]"
+                            [scheme]="colorScheme"
+                            [xAxis]="true"
+                            [yAxis]="true"
+                            [showXAxisLabel]="false"
+                            [showYAxisLabel]="false"
+                            [autoScale]="true">
+                        </ngx-charts-line-chart>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="module-page-card mb-0 h-100">
+                        <h5 class="module-title mb-3" style="font-size: 15px;">Module Distribution</h5>
+                        <ngx-charts-pie-chart
+                            [view]="pieChartView"
+                            [results]="moduleDistribution"
+                            [scheme]="colorScheme"
+                            [labels]="true"
+                            [doughnut]="true">
+                        </ngx-charts-pie-chart>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="module-table-card">
+                        <div class="d-flex align-items-center justify-content-between px-3 pt-3">
+                            <h5 class="module-title" style="font-size: 15px;">Recent Customers</h5>
+                            <a routerLink="/customers" class="fs-13">View all</a>
+                        </div>
+                        <table class="module-table mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Balance</th>
+                                    <th style="width: 90px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let c of recentCustomers">
+                                    <td>
+                                        <p class="fw-600 mb-0">{{ c.Name }}</p>
+                                        <small class="text-muted">{{ c.Code }} · {{ c.Email }}</small>
+                                    </td>
+                                    <td>SAR {{ c.Balance }}</td>
+                                    <td>
+                                        <span class="status-pill" [ngClass]="c.Status ? 'active' : 'inactive'">
+                                            {{ c.Status ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="module-table-card">
+                        <div class="d-flex align-items-center justify-content-between px-3 pt-3">
+                            <h5 class="module-title" style="font-size: 15px;">Recent Products</h5>
+                            <a routerLink="/products" class="fs-13">View all</a>
+                        </div>
+                        <table class="module-table mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th style="width: 90px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of recentProducts">
+                                    <td>
+                                        <p class="fw-600 mb-0">{{ p.Name }}</p>
+                                        <small class="text-muted">{{ p.SKU }} · {{ p.Category }}</small>
+                                    </td>
+                                    <td>SAR {{ p.Price }}</td>
+                                    <td>
+                                        <span class="status-pill" [ngClass]="p.Status ? 'active' : 'inactive'">
+                                            {{ p.Status ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,132 @@
+<h2 mat-dialog-title>{{ selectedId ? 'Edit Customer' : 'Add Customer' }}</h2>
+<mat-dialog-content>
+    <div class="row">
+        <div class="col-lg-12">
+            <form #form="ngForm">
+                <div class="box">
+                    <div class="box-body">
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-6 col-md-6 mb-2">
+                                <label class="mb-1">Customer Name <span class="text-danger">*</span></label>
+                                <div class="form-group">
+                                    <input type="text" name="CustomerName" [(ngModel)]="customerModel.CustomerName"
+                                        class="form-control" placeholder="Enter Customer Name" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 mb-2">
+                                <label class="mb-1">Tax Registration Number</label>
+                                <div class="form-group">
+                                    <input type="text" name="TaxRegistrationNumber"
+                                        [(ngModel)]="customerModel.TaxRegistrationNumber" class="form-control"
+                                        placeholder="Enter Tax Registration Number">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">City</label>
+                                <div class="form-group">
+                                    <input type="text" name="City" [(ngModel)]="customerModel.City"
+                                        class="form-control" placeholder="Enter City">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">District</label>
+                                <div class="form-group">
+                                    <input type="text" name="District" [(ngModel)]="customerModel.District"
+                                        class="form-control" placeholder="Enter District">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">Postal Code</label>
+                                <div class="form-group">
+                                    <input type="text" name="PostalCode" [(ngModel)]="customerModel.PostalCode"
+                                        class="form-control" placeholder="Enter Postal Code">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-6 col-md-6 mb-2">
+                                <label class="mb-1">Street Address</label>
+                                <div class="form-group">
+                                    <input type="text" name="StreetAddress" [(ngModel)]="customerModel.StreetAddress"
+                                        class="form-control" placeholder="Enter Street Address">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="mb-1">Building Number</label>
+                                <div class="form-group">
+                                    <input type="text" name="BuildingNumber"
+                                        [(ngModel)]="customerModel.BuildingNumber" class="form-control"
+                                        placeholder="Enter Building Number">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="mb-1">Additional Number</label>
+                                <div class="form-group">
+                                    <input type="text" name="AddressAdditionalNumber"
+                                        [(ngModel)]="customerModel.AddressAdditionalNumber" class="form-control"
+                                        placeholder="Enter Additional Number">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">Invoicing Email</label>
+                                <div class="form-group">
+                                    <input type="email" name="InvoicingEmail"
+                                        [(ngModel)]="customerModel.InvoicingEmail" class="form-control"
+                                        placeholder="Enter Invoicing Email">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">Invoicing Phone</label>
+                                <div class="form-group">
+                                    <input type="text" name="InvoicingPhone"
+                                        [(ngModel)]="customerModel.InvoicingPhone" class="form-control"
+                                        placeholder="Enter Invoicing Phone">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">Invoicing Code</label>
+                                <div class="form-group">
+                                    <input type="text" name="InvoicingCode" [(ngModel)]="customerModel.InvoicingCode"
+                                        class="form-control" placeholder="Enter Invoicing Code">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1">Contact Type Number</label>
+                                <div class="form-group">
+                                    <input type="text" name="ContactTypeNumber"
+                                        [(ngModel)]="customerModel.ContactTypeNumber" class="form-control"
+                                        placeholder="Enter Contact Type Number">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2" *ngIf="selectedId">
+                                <label class="mb-1">Status</label>
+                                <div class="form-group">
+                                    <select class="form-select" name="IsActive" [(ngModel)]="customerModel.IsActive">
+                                        <option [ngValue]="true">Active</option>
+                                        <option [ngValue]="false">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="div-right">
+        <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+    </div>
+</mat-dialog-actions>
