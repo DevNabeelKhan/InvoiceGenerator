@@ -1,0 +1,76 @@
+.btn-add-link {
+    background: transparent;
+    border: none;
+    color: #4f6ef7;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 2px 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-add-link:hover {
+    color: #3c58e0;
+    text-decoration: underline;
+}
+
+.linked-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.linked-empty {
+    padding: 10px;
+    font-size: 13px;
+    color: #98a2b3;
+    text-align: center;
+    border: 1px dashed #d0d5dd;
+    border-radius: 8px;
+}
+
+.linked-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eaecf0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #fff;
+}
+
+.linked-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #101828;
+}
+
+.linked-card-sub {
+    font-size: 12.5px;
+    color: #667085;
+    margin-top: 2px;
+}
+
+.linked-card-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.icon-btn {
+    background: #f9fafb;
+    border: 1px solid #eaecf0;
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #475467;
+    font-size: 12.5px;
+}
+
+.icon-btn:hover {
+    background: #eef1f5;
+    color: #101828;
+}

@@ -59,6 +59,42 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-12 mb-2">
+                                <label class="mb-1">Customers</label>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" [(ngModel)]="customerToAdd" name="customerToAdd"
+                                        (change)="addCustomerFromDropdown()">
+                                        <option [ngValue]="null">Select existing customer…</option>
+                                        <option *ngFor="let c of availableCustomers" [ngValue]="c.Id">{{ c.CustomerName }}</option>
+                                    </select>
+                                    <button type="button" class="btn-add-link flex-shrink-0" (click)="openAddCustomer()">
+                                        <i class="fa-solid fa-plus"></i> Add Customer
+                                    </button>
+                                </div>
+
+                                <div class="linked-list mt-2">
+                                    <div class="linked-empty" *ngIf="!selectedCustomers.length">
+                                        No customers linked yet.
+                                    </div>
+                                    <div class="linked-card" *ngFor="let c of selectedCustomers">
+                                        <div class="linked-card-info">
+                                            <div class="linked-card-title">{{ c.CustomerName }}</div>
+                                            <div class="linked-card-sub">{{ c.InvoicingEmail }}<span *ngIf="c.InvoicingPhone"> · {{ c.InvoicingPhone }}</span></div>
+                                        </div>
+                                        <div class="linked-card-actions">
+                                            <button type="button" class="icon-btn" (click)="openEditCustomer(c.Id)" title="Edit">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="icon-btn" (click)="unlinkCustomer(c.Id)" title="Unlink">
+                                                <i class="fa-solid fa-link-slash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

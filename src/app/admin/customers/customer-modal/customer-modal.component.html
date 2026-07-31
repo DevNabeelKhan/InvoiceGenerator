@@ -118,6 +118,42 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mt-2 px-2">
+                            <div class="col-lg-12 mb-2">
+                                <label class="mb-1">Beneficiaries</label>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" [(ngModel)]="beneficiaryToAdd" name="beneficiaryToAdd"
+                                        (change)="addBeneficiaryFromDropdown()">
+                                        <option [ngValue]="null">Select existing beneficiary…</option>
+                                        <option *ngFor="let b of availableBeneficiaries" [ngValue]="b.Id">{{ b.BeneficiaryName }}</option>
+                                    </select>
+                                    <button type="button" class="btn-add-link flex-shrink-0" (click)="openAddBeneficiary()">
+                                        <i class="fa-solid fa-plus"></i> Add Beneficiary
+                                    </button>
+                                </div>
+
+                                <div class="linked-list mt-2">
+                                    <div class="linked-empty" *ngIf="!selectedBeneficiaries.length">
+                                        No beneficiaries linked yet.
+                                    </div>
+                                    <div class="linked-card" *ngFor="let b of selectedBeneficiaries">
+                                        <div class="linked-card-info">
+                                            <div class="linked-card-title">{{ b.BeneficiaryName }}</div>
+                                            <div class="linked-card-sub">{{ b.IBAN }}<span *ngIf="b.BankName"> · {{ b.BankName }}</span></div>
+                                        </div>
+                                        <div class="linked-card-actions">
+                                            <button type="button" class="icon-btn" (click)="openEditBeneficiary(b.Id)" title="Edit">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="icon-btn" (click)="unlinkBeneficiary(b.Id)" title="Unlink">
+                                                <i class="fa-solid fa-link-slash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
