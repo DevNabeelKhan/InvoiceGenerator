@@ -1,0 +1,86 @@
+@import 'ngx-toastr/toastr';
+/* You can add global styles to this file, and also import other style files */
+
+p.error-red {
+    color: red;
+    padding: 0 0;
+    font-size: 13px;
+}button:disabled{
+    opacity: 0.8;
+}
+.text-right{
+    text-align: right;
+}
+a.url-set {
+    background: #0471a526;
+    width: 100%;
+    display: block;
+    padding: 3px 8px;
+    font-size: 15px;
+    border-radius: 7px;
+    color: #052d60;
+    position: relative;
+}
+a.url-set span.cancel {
+    position: absolute;
+    right: 19px;
+    top: -6px;
+    width: 20px; 
+    font-size: 18px !important;
+}
+a.url-set span.cancel i {
+    font-size: 16px; 
+}
+button.btn-modal-close {
+    background-color: #8d8d8d;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    border: 0;
+    border-radius: 8px;
+}
+
+.wd-100{
+    width: 100%;
+}
+.form-control {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 3px 10px;
+    color: #000;
+}.mat-mdc-form-field-infix {
+    padding: 0 7px;
+}
+.mat-mdc-select-panel {
+    background: white !important;
+}
+.blog-box .blog-img {
+    height: 280px;
+}
+img.img-tble {
+    width: 124px;
+    border-radius: 13px;
+}
+.relative-autoc-comple .list-auto {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #e1e1e1;
+}
+.relative-autoc-comple {
+    position: relative;
+    width: 100%;
+}
+.list-auto .mat-mdc-option {
+    height: auto !important;
+    min-height: auto;
+    padding: 7.5px 12px;
+    border-bottom: 1px solid #dbdbdb;
+}.relative-autoc-comple span {
+    font-size: 15px !important;
+}

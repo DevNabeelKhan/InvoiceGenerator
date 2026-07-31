@@ -1,0 +1,309 @@
+﻿.content {
+    min-height: 250px;
+    padding: 1.5rem 1.5rem 0px 1.5rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.box {
+    position: relative;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 0px;
+    -webkit-transition: .5s;
+    transition: .5s;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+    box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+}
+.box-body {
+    padding: 1.5rem;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    border-radius: 5px;
+}
+.theme-primary .bg-primary-light {
+    background-color: #e2f3fc !important;
+    color: #019ff8 !important;
+}
+.avatar-lg {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.286rem;
+}
+.avatar {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    text-transform: uppercase;
+    border-radius: 5px;
+}
+.theme-primary .text-danger {
+    color: #f2426d !important;
+}
+.wrapper .border-dark {
+    border-color: #191d33 !important;
+}
+.border-dark {
+    border-color: #191d33 !important;
+}
+.fs-18 {
+    font-size: 1.3846153846rem !important;
+}
+.fs-16 {
+    font-size: 1.2307692308rem !important;
+}
+.fw-600 {
+    font-weight: 600 !important;
+}
+.text-dark {
+    color: #191d33 !important;
+}
+.text-body {
+    --bs-text-opacity: 1;
+    color: rgba(33, 37, 41), var(--bs-text-opacity)) !important;
+}
+.border-1 {
+    border-width: 1px !important;
+}
+.nodec{
+    text-decoration:none;
+}
+.text-red {
+    color: #F63B3B;
+}
+.box-body i:before {
+    color: #F63B3B;
+}
+
+/* New copy Css*/
+/*.form-group input {
+    padding:2px 10px 2px 35px;
+    height:45px;
+    position:relative;
+}
+.form-group select {
+    padding: 2px 10px 2px 35px;
+    height: 45px;
+    position: relative;
+}*/
+
+.form-control {
+    border-color: #E9EDF4;
+    color: #202C4B;
+    background-color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    border-radius: 5px;
+    padding: 0.5rem 0.625rem;
+    height: 38px;
+    transition: all 0.5s;
+}
+.form-control {
+    padding-left: 25px;
+}
+
+
+.form-group {
+    position: relative;
+}
+
+    .form-group i,
+    .form-group img {
+        position: absolute;
+        left: 10px;
+        top: 14px;
+        opacity: 0.8;
+        color: #F63B3B;
+        font-size: 12px;
+    }
+
+.form-select {
+    padding-left: 30px;
+}
+
+.form-control[type=file] {
+    padding: 0.3rem 0.5rem;
+}
+
+    .form-control[type=file].form-control-sm {
+        padding: 0.25rem 0.5rem !important;
+    }
+
+    .form-control[type=file].form-control-lg {
+        padding: 0.5rem 1rem !important;
+    }
+.prg-sm-box .nav-link.active {
+    background-color:#F63B3B !important;
+    color: #ffffff !important;
+}
+
+.prg-sm-box .nav-link.active label {
+    color:#fff;
+}
+    .prg-sm-box .nav-link {
+    background-color: #E9EDF4;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 25px;
+    text-align:left;
+    width: 100%;
+    /* height: 70px; */
+    margin-bottom: 5px;
+    margin-right:15px!important;
+    font-size: 15px;
+    color: #000;
+}
+.prg-sm-box2 .nav-link {
+    background-color: #E9EDF4;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 25px;
+    text-align: left;
+    width: 100%;
+    /* height: 70px; */
+    margin-bottom: 5px;
+    margin-right: 15px !important;
+    font-size: 15px;
+    color: #000;
+    width: 230px;
+}
+    .prg-sm-box .nav-link label {
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        color: #111;
+        margin: 0;
+    }
+.btn-primary i {
+    color: #FFF!important;
+}
+/*dashboard*/
+.d-box {
+    border: 1px solid #979696;
+    border-radius: 8px;
+    padding: 30px 25px 10px 25px;
+    min-height: 330px;
+    overflow: auto;
+    margin-bottom:20px;
+}
+.d-box a{
+    background-color:#F63B3B;
+    color:#fff;
+    padding:8px 15px; 
+    max-width:180px;
+    border:0;
+    text-decoration:none;
+    border-radius:8px;
+    font-size:12px;
+}
+.d-box-list {
+    list-style: none;
+    padding: 0;
+    min-height: 180px;
+}
+    .d-box-list li {
+        display: flex;
+        gap: 20px;
+        
+    }
+        .d-box-list li b {
+            flex: 1 0 200px;
+            max-width: 200px;
+        }
+.d-box-22 a{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+
+/*dashboard*/
+
+/*/Blog Start/*/
+
+.post-holder {
+    position: relative;
+    min-height: 450px;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 0.3s ease-in-out;
+}
+
+.post-holder:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgb(0,0,0);
+    background: linear-gradient(0deg, rgba(0,0,0,1) 37%, rgba(0,0,0,0) 66%);
+    transition: 0.3s ease-in-out;
+}
+
+
+.post-holder:hover:after {
+    background: rgb(4,11,57);
+    background: linear-gradient(0deg, rgba(4,11,57,1) 35%, rgba(4,11,57,0) 88%);
+}
+
+.post-holder h4 {
+    color: #fff;
+}
+
+.post-meta-holder {
+    position: absolute;
+    bottom: 0;
+    z-index: 10;
+    color: #fff;
+    padding: 0 20px;
+    padding-bottom: 25px;
+}
+
+    .post-meta-holder h4 {
+        font-size: calc(17px + (22 - 17) * (100vw - 320px) / (1920 - 320));
+    }
+
+    .post-meta-holder p {
+        /font-size: 14px;
+        / font-size: calc(12px + (14 - 12) * (100vw - 320px) / (1920 - 320));
+    }
+
+.post-date {
+    background-color: var(--sec-color);
+    color: #fff;
+    display: inline-block;
+    padding: 2px 20px;
+    margin-bottom: 10px;
+    position: relative;
+    left: -20px;
+    border-radius: 0 12px 12px 0;
+}
+.d-blog{
+    background-color:white;
+    border-radius:5px;
+}
+/*/Blog End/*/
+@media(max-width:991px) {
+    .prg-sm-box .nav-link {
+        padding: 10px 18px;
+    }
+}
+@media(max-width:786px){
+    .d-box-list li {
+        display: grid;
+        gap: 0;
+    }
+}

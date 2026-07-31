@@ -1,0 +1,118 @@
+<header class="main-header">
+    <div class="d-flex align-items-center logo-box justify-content-start">
+        <!-- Logo -->
+        <a href="javascript:;" class="logo">
+            <!-- logo-->
+
+            <div class="logo-lg mt-3 ">
+                <span class="light-logo">
+                    <img src="../../../../assets/images/logo.png" alt="logo" width="140" /></span>
+                <span class="dark-logo">
+                    <img src="../../../../assets/images/logo.png" alt="logo" width="140" /></span>
+            </div>
+        </a>
+    </div>
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <div class="app-menu">
+            <ul class="header-megamenu nav">
+                <li class="btn-group nav-item">
+                    <a href="#" class="waves-effect waves-light nav-link push-btn ctm-btn ms-0" data-toggle="push-menu" role="button">
+                        <i class="fa-solid fa-bars"></i>
+                    </a>
+                </li> 
+            </ul>
+        </div>
+
+        <div class="navbar-custom-menu r-side ">
+            <ul class="nav navbar-nav mb-2">
+       
+                <li class="dropdown notifications-menu btn-group">
+                 
+                    <ul class="dropdown-menu animated bounceIn">
+                        <li class="header">
+                            <div class="p-20">
+                                <div class="flexbox">
+                                    <div>
+                                        <h4 class="mb-0 mt-0">Notifications</h4>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="text-danger">Clear All</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu sm-scrol">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-users text-info"></i>Curabitur id eros quis nunc suscipit blandit.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-warning text-warning"></i>Duis malesuada justo eu sapien elementum, in semper diam posuere.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-users text-danger"></i>Donec at nisi sit amet tortor commodo porttitor pretium a erat.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-shopping-cart text-success"></i>In gravida mauris et nisi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-user text-danger"></i>Praesent eu lacus in libero dictum fermentum.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-user text-primary"></i>Nunc fringilla lorem 
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-user text-success"></i>Nullam euismod dolor ut quam interdum, at scelerisque ipsum imperdiet.
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="#">View all</a>
+                        </li>
+                    </ul>
+                </li>
+              
+
+              
+
+                <li class="btn-group nav-item d-xl-inline-flex d-none">
+                    <a href="#" data-provide="fullscreen" class="waves-effect waves-light nav-link  svg-bt-icon" title="Full Screen">
+                        <i data-feather="maximize"></i>
+                    </a>
+                </li>
+
+                <!-- User Account-->
+                <li class="dropdown user user-menu">
+                    <a href="#" class="waves-effect waves-light dropdown-toggle w-auto l-h-12 bg-transparent p-0 no-shadow" 
+                    title="User" data-bs-toggle="modal" data-bs-target="#quick_user_toggle">
+                        <div class="d-flex pt-0 align-items-center">
+                            <div class="text-end me-10">
+                                <p class="pt-5 fs-14 mb-0 fw-700">{{user.fullName}} </p>
+                                <small class="fs-10 mb-0 text-uppercase text-mute">{{user.roleTitle}}</small>
+                            </div>
+                            <img [src]="user.pictureUrl" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+                        </div>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </nav>
+</header>

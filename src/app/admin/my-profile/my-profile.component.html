@@ -1,0 +1,73 @@
+<div class="content-wrapper" style="">
+    <div class="container-full">
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="box px-4 py-3">
+                <div class="row">
+                    <div class="col-lg-2 px-2">
+                        <h3 class="nt-title fw-600 text-dark ">My Profile</h3>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <label class="fs-12">Profile Picture *</label>
+                                <img [src]="UserModel.PictureUrl" *ngIf="UserModel.PictureUrl" class="my-profile-img" alt="">
+                                <input type="file" name="PictureUrl"  *ngIf="!UserModel.PictureUrl" (change)="UploadFile($event)" class="upload form-control choose-fileUp">
+                                <a href="javascript:;" *ngIf="UserModel.PictureUrl" class="url-set">{{UserModel?.PictureUrl?.split('/')[UserModel?.PictureUrl?.split('/')?.length-1]}}
+                                    <span class="cancel" (click)="UserModel.PictureUrl = null"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </div> 
+                        </div> 
+
+                        <div class="row">
+
+                            <div class="col-lg-6 mb-3">
+                                <label class="fs-12">FullName *</label>
+                                <input type="text" placeholder="FullName" class="form-control" [(ngModel)]="UserModel.FullName" name="FullName"  #FullName="ngModel"  required>
+                                <ng-container *ngIf="FullName.touched && !FullName.value">
+                                    <p class="error-red">FullName is required </p>
+                                </ng-container>
+                            </div> 
+                            </div>  
+
+                            <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <label class="fs-12">Email *</label>
+                                <input type="text" placeholder="Email" class="form-control" [(ngModel)]="UserModel.Email" name="Email"  #Email="ngModel"  required>
+                                <ng-container *ngIf="Email.touched && !Email.value">
+                                    <p class="error-red">Email is required </p>
+                                </ng-container>
+                            </div>
+                        </div> 
+
+                            <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <label class="fs-12">UserName *</label>
+                                <input type="text" placeholder="UserName" class="form-control" disabled [(ngModel)]="UserModel.UserName" name="UserName"  #UserName="ngModel"  required>
+                                <ng-container *ngIf="UserName.touched && !UserName.value">
+                                    <p class="error-red">UserName is required </p>
+                                </ng-container>
+                            </div>    
+                            </div>
+                        <div class="row">
+                        <div class="text-right col-md-6"> 
+                        <button type="submit" class="btn-custom" style="margin-left: 10px;" [disabled]="!form.form.valid" >Submit</button>
+                        </div>
+                    </div>
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </section>
+    </div>
+
+</div>
+ 

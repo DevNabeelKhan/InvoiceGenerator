@@ -1,0 +1,71 @@
+<div class="content-wrapper  ms-4" style="position: relative;bottom: 30px;">
+    <div class="container-full">
+        <!-- Main content -->
+        <section class="content">
+            <div class="box">
+                <div class="box-body">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-lg-3">
+                            <h3 class="fw-600 box-title mb-4 mt-4">User</h3>
+                        </div>
+                        <div class="col-lg-3 d-flex justify-content-end">
+                            <a href="javascript:;" (click)="addupdatemodal()" class="cmp-btn">
+                                <i class="fa fa-plus me-15"></i>Add User</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="table-responsive rounded-4" style="position: relative; top: 20px;">
+                <table class="table table-bordered table-hover ">
+                    <thead class="table-secondary">
+                        <tr>
+                            <td scope="col" style="width: 70px;"><span class="fs-14 fw-600">S.No</span></td>
+                            <td scope="col"><span class="fs-14 fw-600">Full Name</span></td>
+                            <td scope="col"><span class="fs-14 fw-600">User Name</span></td>
+                            <td scope="col"><span class="fs-14 fw-600">Password</span></td>
+                            <td scope="col"><span class="fs-14 fw-600">RoleId</span></td>
+                            <td scope="col" style="width: 90px;"><span class="fs-14 fw-600">Action</span></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="!user?.length">
+                            <td colspan="8" class="text-center">No Record </td>
+                        </tr>
+
+                        <tr *ngFor="let item of user let i = index;">
+                            <td>
+                                <p class="text-body mb-0">{{i+1}}</p>
+                            </td>
+                            <td>
+                                <p class="text-body mb-0">{{item.FullName}}</p>
+                            </td>
+                            <td>
+                                <p class="text-body mb-0">{{item.UserName}}</p>
+                            </td>
+                            <td>
+                                <p class="text-body mb-0">{{item.Password}}</p>
+                            </td>
+                            <td>
+                                <p class="text-body mb-0">{{item.Role}}</p>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start">
+                                    <a href="javascript:;" (click)="addupdatemodal(item.Id)"
+                                        class="text-warning px-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a href="javascript:;" (click)="OpenDeleteModal(item.Id)"><i
+                                            class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+    </div>
+
+</div>
+
+<router-outlet></router-outlet>

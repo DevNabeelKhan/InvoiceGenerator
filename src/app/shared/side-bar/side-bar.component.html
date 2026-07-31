@@ -1,0 +1,51 @@
+
+<header class="main-header bg-primary text-white d-flex justify-content-between align-items-center p-3 shadow-sm">
+  <h4 class="m-0">
+    📩 Invoice
+  </h4>
+
+
+  <div class="d-flex align-items-center gap-2">
+    <div class="user-name d-none d-md-block">
+      <span class="fw-semibold">{{ user?.fullName }}</span>
+    </div>
+    <div class="user-avatar">
+      <img *ngIf="user?.pictureUrl; else defaultIcon" [src]="user.pictureUrl" class="rounded-circle" width="35" height="35" alt="User" />
+      <ng-template #defaultIcon>
+        <i class="fa-solid fa-user-circle fa-2x"></i>
+      </ng-template>
+    </div>
+  </div>
+</header>
+<button
+  class="floating-toggle-btn"
+  (click)="toggleSidebar()"
+  [ngClass]="{ 'collapsed': !sidebarOpen }"
+  >
+  <i class="fa fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<aside class="main-sidebar shadow-lg" [ngClass]="{ 'sidebar-collapsed': !sidebarOpen }">
+  <section class="sidebar p-3">
+    
+    <!-- Sidebar Header -->
+    
+    
+    <ul class="nav flex-column">
+      
+        <li class="nav-item" *ngIf="user.roleId !== 1">
+          <a class="nav-link" routerLink="/user"><i class="fa-solid fa-user"></i> User</a>
+        </li>
+       
+      
+      <li class="nav-item mt-4">
+        <a class="nav-link text-danger" href="javascript:;" (click)="logout()">
+          <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </section>
+</aside>
+
+
