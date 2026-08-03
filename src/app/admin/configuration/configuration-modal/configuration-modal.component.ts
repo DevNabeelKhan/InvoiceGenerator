@@ -62,7 +62,8 @@ export class ConfigurationModalComponent {
       const res: any = await this.api.InsertUpdateConfiguration(this.typeInfo.tableName, payload);
       if (res?.statusCode == 200) {
         this.toastr.success(this.selectedId ? `${this.typeInfo.singular} updated successfully` : `${this.typeInfo.singular} added successfully`);
-        this.dialogRef.close(true);
+        const newId = res.data?.Id ?? this.selectedId;
+        this.dialogRef.close(newId || true);
       } else {
         this.toastr.error(res?.message || 'Something went wrong');
       }

@@ -51,6 +51,39 @@
                         </div>
 
                         <div class="row mt-2 px-2">
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1 d-flex justify-content-between">
+                                    <span>Unit of Measure</span>
+                                    <a href="javascript:;" class="quick-add-link" (click)="addUnit()">+ Add new</a>
+                                </label>
+                                <select class="form-select" name="UnitOfMeasureId" [(ngModel)]="productModel.UnitOfMeasureId">
+                                    <option [ngValue]="null">Select…</option>
+                                    <option *ngFor="let u of units" [ngValue]="u.Id">{{ u.Title }}</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1 d-flex justify-content-between">
+                                    <span>Revenue Account</span>
+                                    <a href="javascript:;" class="quick-add-link" (click)="addAccount()">+ Add new</a>
+                                </label>
+                                <select class="form-select" name="RevenueAccountID" [(ngModel)]="productModel.RevenueAccountID">
+                                    <option [ngValue]="null">Select…</option>
+                                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-2">
+                                <label class="mb-1 d-flex justify-content-between">
+                                    <span>Tax Rate</span>
+                                    <a href="javascript:;" class="quick-add-link" (click)="addTaxRate()">+ Add new</a>
+                                </label>
+                                <select class="form-select" name="RevenueTaxRateId" [(ngModel)]="productModel.RevenueTaxRateId">
+                                    <option [ngValue]="null">Select…</option>
+                                    <option *ngFor="let t of taxRates" [ngValue]="t.Id">{{ t.Title }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 px-2">
                             <div class="col-lg-6 col-md-6 mb-2" *ngIf="selectedId">
                                 <label class="mb-1">Status</label>
                                 <div class="form-group">

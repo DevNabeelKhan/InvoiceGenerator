@@ -19,6 +19,10 @@ export interface Customer {
     SellingRevenueAccountId?: number | null;
     SellingRevenueCostCenterId?: number | null;
     SellingRevenueTaxRateId?: number | null;
+    ArabicName?: string | null;
+    ArabicAddress?: string | null;
+    Email?: string | null;
+    Phone?: string | null;
     IsActive?: boolean;
     TotalRecords?: number;
 }

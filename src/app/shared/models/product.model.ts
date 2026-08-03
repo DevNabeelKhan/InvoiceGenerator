@@ -8,6 +8,7 @@ export interface Product {
     SellingPrice?: number | null;
     RevenueAccountID?: number | null;
     RevenueTaxRateId?: number | null;
+    RevenueTaxRatePercentage?: number | null;
     PurchaseCost?: number | null;
     ExpenseAccountId?: number | null;
     PurchaseTaxRateId?: number | null;

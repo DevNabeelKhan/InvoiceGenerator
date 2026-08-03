@@ -1,0 +1,10 @@
+.quick-add-link {
+    font-size: 12px;
+    color: #4f46e5;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.quick-add-link:hover {
+    text-decoration: underline;
+}

@@ -44,6 +44,9 @@
 
           <li class="nav-section-title">Sales</li>
           <li class="nav-item">
+            <a class="nav-link" routerLink="/invoices" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" routerLink="/customers" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-users"></i> Customers</a>
           </li>
           <li class="nav-item">
@@ -56,6 +59,12 @@
           </li>
 
           <li class="nav-section-title">Settings</li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/settings/company" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-building"></i> Company</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/settings/currencies" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-coins"></i> Currencies</a>
+          </li>
           <li class="nav-item" *ngIf="user.roleId !== 1">
             <a class="nav-link" routerLink="/user" routerLinkActive="active" (click)="closeSidebarOnMobile()"><i class="fa-solid fa-user"></i> User</a>
           </li>

@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{ selectedId ? 'Edit Company' : 'Add Company' }}</h2>
+<mat-dialog-content>
+    <form #form="ngForm">
+        <div class="row mt-2 px-2">
+            <div class="col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Company Name (English) <span class="text-danger">*</span></label>
+                <input type="text" name="Name" [(ngModel)]="companyModel.Name" class="form-control"
+                    placeholder="Enter company name" (ngModelChange)="onNameChange()" required autofocus>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-2">
+                <label class="mb-1 d-flex justify-content-between">
+                    <span>Company Name (Arabic)</span>
+                    <span class="hint-text mb-0">Auto-filled</span>
+                </label>
+                <input type="text" name="ArabicName" [(ngModel)]="companyModel.ArabicName" class="form-control"
+                    placeholder="Auto-filled from English name" (ngModelChange)="onArabicNameEdited()" dir="rtl">
+            </div>
+        </div>
+
+        <div class="row mt-2 px-2">
+            <div class="col-lg-12 mb-2">
+                <label class="mb-1">Address</label>
+                <textarea name="Address" [(ngModel)]="companyModel.Address" class="form-control"
+                    style="height: 60px;" placeholder="Enter address"></textarea>
+            </div>
+        </div>
+
+        <div class="row mt-2 px-2">
+            <div class="col-lg-4 col-md-6 mb-2">
+                <label class="mb-1">VAT Number</label>
+                <input type="text" name="VATNumber" [(ngModel)]="companyModel.VATNumber" class="form-control"
+                    placeholder="Enter VAT number">
+            </div>
+            <div class="col-lg-4 col-md-6 mb-2">
+                <label class="mb-1">Email</label>
+                <input type="email" name="Email" [(ngModel)]="companyModel.Email" class="form-control"
+                    placeholder="Enter email">
+            </div>
+            <div class="col-lg-4 col-md-6 mb-2">
+                <label class="mb-1">Phone</label>
+                <input type="text" name="Phone" [(ngModel)]="companyModel.Phone" class="form-control"
+                    placeholder="Enter phone">
+            </div>
+        </div>
+
+        <div class="row mt-2 px-2" *ngIf="selectedId">
+            <div class="col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Status</label>
+                <select class="form-select" name="IsActive" [(ngModel)]="companyModel.IsActive">
+                    <option [ngValue]="true">Active</option>
+                    <option [ngValue]="false">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <p class="hint-text px-2">More fields (logo, stamp, bank details) can be edited later from Settings &gt; Company.</p>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="div-right">
+        <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+    </div>
+</mat-dialog-actions>

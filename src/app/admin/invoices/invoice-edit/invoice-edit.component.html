@@ -1,0 +1,299 @@
+<div class="invoice-edit-wrapper">
+
+  <!-- Top bar -->
+  <div class="invoice-topbar">
+    <div class="d-flex align-items-center gap-2">
+      <a href="javascript:;" (click)="cancel()" class="topbar-close"><i class="fa-solid fa-xmark"></i></a>
+      <span class="topbar-title">{{ invoiceId ? 'Edit invoice' : 'New invoice' }}</span>
+      <span class="topbar-status" *ngIf="invoice.Status">{{ invoice.Status | uppercase }}</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="togglePreview()">
+        <i class="fa-solid fa-eye" [ngClass]="{'fa-eye-slash': !showPreview}"></i>
+        {{ showPreview ? 'Hide preview' : 'Show preview' }}
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" [disabled]="isSaving" (click)="onSave('Draft')">
+        Save draft
+      </button>
+      <button class="btn-primary-pill" [disabled]="isSaving" (click)="onSave('Approved')">
+        <i class="fa-solid fa-check"></i> {{ isSaving ? 'Saving...' : 'Finalize' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="invoice-edit-body" [class.no-preview]="!showPreview">
+
+    <!-- Left: Form -->
+    <div class="invoice-form-panel">
+      <h2 class="invoice-heading">Invoice <span class="invoice-number" *ngIf="invoice.InvoiceNumber"># {{ invoice.InvoiceNumber }}</span></h2>
+
+      <div class="form-row">
+        <label class="d-flex justify-content-between">
+          <span>Issuer *</span>
+          <a href="javascript:;" class="quick-add-link" (click)="openAddCompany()">+ Add new</a>
+        </label>
+        <select class="form-select" [(ngModel)]="invoice.CompanyId" (ngModelChange)="onCompanyChange()">
+          <option [ngValue]="null">Select company…</option>
+          <option *ngFor="let c of companies" [ngValue]="c.Id">{{ c.Name }}</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label class="d-flex justify-content-between">
+          <span>Customer *</span>
+          <a href="javascript:;" class="quick-add-link" (click)="openAddCustomer()">+ Add new</a>
+        </label>
+        <select class="form-select" [(ngModel)]="invoice.CustomerId" (ngModelChange)="onCustomerChange()">
+          <option [ngValue]="null">Select customer…</option>
+          <option *ngFor="let c of customers" [ngValue]="c.Id">{{ c.CustomerName }}</option>
+        </select>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label>Date *</label>
+          <input type="date" class="form-control" [(ngModel)]="invoice.InvoiceDate" />
+        </div>
+        <div>
+          <label>Due date *</label>
+          <input type="date" class="form-control" [(ngModel)]="invoice.DueDate" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Purchase order</label>
+        <input type="text" class="form-control" [(ngModel)]="invoice.PurchaseOrderNumber" placeholder="Enter PO number(s)" />
+      </div>
+
+      <div class="form-row">
+        <label>Reference</label>
+        <input type="text" class="form-control" [(ngModel)]="invoice.Reference" placeholder="Enter reference" />
+      </div>
+
+      <div class="form-row">
+        <label>Project</label>
+        <input type="text" class="form-control" [(ngModel)]="invoice.ProjectName" placeholder="Enter project name" />
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label class="d-flex justify-content-between">
+            <span>Currency *</span>
+            <a href="javascript:;" class="quick-add-link" (click)="openAddCurrency()">+ Add new</a>
+          </label>
+          <select class="form-select" [(ngModel)]="invoice.CurrencyId" (ngModelChange)="onCurrencyChange()">
+            <option [ngValue]="null">Select…</option>
+            <option *ngFor="let c of currencies" [ngValue]="c.Id">{{ c.Code }}</option>
+          </select>
+        </div>
+        <div>
+          <label>Exchange rate</label>
+          <input type="number" step="0.000001" class="form-control" [(ngModel)]="invoice.ExchangeRate" />
+        </div>
+      </div>
+
+      <!-- Line items grid -->
+      <div class="lines-toolbar">
+        <span class="lines-hint">Prices are exc. tax</span>
+      </div>
+
+      <div class="table-responsive invoice-lines-table-wrap">
+        <table class="invoice-lines-table">
+          <thead>
+            <tr>
+              <th style="width: 26px;"></th>
+              <th>Description *</th>
+              <th style="width: 70px;">Qty *</th>
+              <th style="width: 90px;">Price</th>
+              <th style="width: 70px;">VAT %</th>
+              <th style="width: 160px;">Account *</th>
+              <th style="width: 100px;" class="text-end">Total</th>
+              <th style="width: 70px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let line of lines; let i = index;">
+              <td class="drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
+              <td>
+                <div class="d-flex gap-1 mb-1">
+                  <select class="form-select form-select-sm" [(ngModel)]="line.ProductId" (ngModelChange)="onProductSelect(line)">
+                    <option [ngValue]="null">Select product… (optional)</option>
+                    <option *ngFor="let p of products" [ngValue]="p.Id">{{ p.Title }}</option>
+                  </select>
+                  <a href="javascript:;" class="quick-add-icon" title="Add new product" (click)="openAddProduct(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
+                </div>
+                <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="line.Description"
+                  placeholder="Line description" (ngModelChange)="recalculateLine(line)"></textarea>
+              </td>
+              <td>
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.Quantity" (ngModelChange)="recalculateLine(line)" />
+              </td>
+              <td>
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.Price" (ngModelChange)="recalculateLine(line)" />
+              </td>
+              <td>
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.TaxRate" (ngModelChange)="recalculateLine(line)" />
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  <select class="form-select form-select-sm" [(ngModel)]="line.AccountId" (ngModelChange)="recalculateLine(line)">
+                    <option [ngValue]="null">Select…</option>
+                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
+                  </select>
+                  <a href="javascript:;" class="quick-add-icon" title="Add new account" (click)="openAddAccount(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
+                </div>
+              </td>
+              <td class="text-end fw-600">{{ line.LineTotal | number:'1.2-2' }}</td>
+              <td class="text-center">
+                <a href="javascript:;" class="row-action-btn" title="Duplicate" (click)="duplicateLine(i)">
+                  <i class="fa-solid fa-copy"></i>
+                </a>
+                <a href="javascript:;" class="row-action-btn danger" title="Delete" (click)="removeLine(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lines-footer">
+        <button class="btn-add-link" (click)="addLine()"><i class="fa-solid fa-plus"></i> Add line</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="clearLines()"><i class="fa-solid fa-broom"></i> Clear lines</button>
+      </div>
+
+      <!-- Totals -->
+      <div class="totals-section">
+        <div class="totals-row">
+          <span>Subtotal</span>
+          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.Subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="totals-row">
+          <span>Discount %</span>
+          <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.DiscountPercentage" (ngModelChange)="recalculateAll()" />
+        </div>
+        <div class="totals-row">
+          <span>Discount amount</span>
+          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.DiscountAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="totals-row">
+          <span>Total VAT</span>
+          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.TaxAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="totals-row">
+          <span>Retention %</span>
+          <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.RetentionPercentage" (ngModelChange)="recalculateAll()" />
+        </div>
+        <div class="totals-row">
+          <span>Retention amount</span>
+          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.RetentionAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="totals-row grand">
+          <span>Total</span>
+          <span>{{ invoice.CurrencyCode }} {{ invoice.GrandTotal | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Notes / Bank details -->
+      <div class="form-row mt-3">
+        <label>Notes</label>
+        <textarea class="form-control" rows="6" [(ngModel)]="invoice.Notes"
+          placeholder="Bank Detail :&#10;BENEFICIARY NAME: ...&#10;BANK NAME: ...&#10;ACCOUNT CURRENCY: ...&#10;ACCOUNT NUMBER: ...&#10;IBAN: ...&#10;SWIFT CODE: ..."></textarea>
+      </div>
+
+      <div class="doc-actions">
+        <button class="btn btn-outline-secondary btn-sm" (click)="downloadPdf()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="downloadXml()"><i class="fa-solid fa-file-code"></i> Generate XML</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="regenerateQr()"><i class="fa-solid fa-qrcode"></i> Generate QR</button>
+      </div>
+    </div>
+
+    <!-- Right: Preview -->
+    <div class="invoice-preview-panel" *ngIf="showPreview">
+      <div class="preview-card" dir="rtl">
+        <div class="preview-header">
+          <div class="preview-header-left">
+            <div class="preview-company-name">{{ invoice.CompanyName }}</div>
+            <div class="preview-company-name-ar">{{ invoice.CompanyArabicName }}</div>
+            <div class="preview-small">{{ invoice.CompanyAddress }}</div>
+            <div class="preview-small">VAT: {{ invoice.CompanyVATNumber }}</div>
+          </div>
+          <div class="preview-header-right">
+            <img *ngIf="invoice.LogoPath" [src]="invoice.LogoPath" class="preview-logo" alt="logo" />
+            <div class="preview-invoice-title">Tax Invoice</div>
+            <div class="preview-invoice-title-ar">فاتورة ضريبية</div>
+          </div>
+        </div>
+
+        <table class="preview-meta-table">
+          <tr><td>Customer</td><td>{{ invoice.CustomerName }}</td></tr>
+          <tr><td>Address</td><td>{{ invoice.CustomerAddress }}</td></tr>
+          <tr><td>VAT number</td><td>{{ invoice.CustomerVATNumber }}</td></tr>
+          <tr><td>Invoice number</td><td>{{ invoice.InvoiceNumber || '(auto-generated)' }}</td></tr>
+          <tr><td>Date</td><td>{{ invoice.InvoiceDate | date:'yyyy-MM-dd' }}</td></tr>
+          <tr><td>Due date</td><td>{{ invoice.DueDate | date:'yyyy-MM-dd' }}</td></tr>
+          <tr><td>Reference</td><td>{{ invoice.Reference }}</td></tr>
+          <tr><td>Project</td><td>{{ invoice.ProjectName }}</td></tr>
+        </table>
+
+        <table class="preview-lines-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Taxable</th>
+              <th>VAT</th>
+              <th>Line amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let line of lines; let i = index;">
+              <td>{{ i + 1 }}</td>
+              <td>{{ line.Description }}</td>
+              <td>{{ line.Quantity | number:'1.0-2' }}</td>
+              <td>{{ line.Price | number:'1.2-2' }}</td>
+              <td>{{ line.TaxableAmount | number:'1.2-2' }}</td>
+              <td>{{ line.VATAmount | number:'1.2-2' }}</td>
+              <td>{{ line.LineTotal | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="preview-totals-table">
+          <tr><td>Subtotal</td><td>{{ invoice.Subtotal | number:'1.2-2' }}</td></tr>
+          <tr><td>Discount</td><td>{{ invoice.DiscountAmount | number:'1.2-2' }}</td></tr>
+          <tr><td>Total VAT</td><td>{{ invoice.TaxAmount | number:'1.2-2' }}</td></tr>
+          <tr><td>Retention</td><td>{{ invoice.RetentionAmount | number:'1.2-2' }}</td></tr>
+          <tr class="grand"><td>Grand total</td><td>{{ invoice.CurrencyCode }} {{ invoice.GrandTotal | number:'1.2-2' }}</td></tr>
+        </table>
+
+        <div class="preview-footer">
+          <div class="preview-bank">
+            <strong>Bank details</strong>
+            <div class="preview-small">{{ invoice.CompanyBankName }}</div>
+            <div class="preview-small">{{ invoice.BankAccountNumber }}</div>
+            <div class="preview-small">{{ invoice.IBAN }}</div>
+            <div class="preview-small">{{ invoice.SwiftCode }}</div>
+          </div>
+          <div class="preview-qr">
+            <img *ngIf="qrImageBase64" [src]="qrImageBase64" alt="QR" />
+            <div *ngIf="!qrImageBase64" class="preview-qr-placeholder">
+              <i class="fa-solid fa-qrcode"></i>
+              <span>QR will appear after save</span>
+            </div>
+            <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" class="preview-stamp" alt="stamp" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<div class="content-wrapper ms-4">
+    <div class="container-full">
+        <section class="content">
+            <div class="module-page-card">
+                <div>
+                    <h3 class="module-title">Company Settings</h3>
+                    <p class="module-subtitle">Configure your company profile used on invoices, PDFs and QR codes</p>
+                </div>
+            </div>
+
+            <div class="module-table-card" style="padding: 24px;">
+                <form #form="ngForm" *ngIf="!isLoading">
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Company Name (English) *</label>
+                            <input type="text" class="form-control" name="Name" [(ngModel)]="company.Name"
+                                (ngModelChange)="onNameChange()" required />
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1 d-flex justify-content-between">
+                                <span>Company Name (Arabic)</span>
+                                <span class="auto-fill-hint">Auto-filled from English</span>
+                            </label>
+                            <input type="text" class="form-control" name="ArabicName" [(ngModel)]="company.ArabicName"
+                                (ngModelChange)="onArabicNameEdited()" dir="rtl" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Address (English)</label>
+                            <textarea class="form-control" rows="2" name="Address" [(ngModel)]="company.Address"
+                                (ngModelChange)="onAddressChange()"></textarea>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1 d-flex justify-content-between">
+                                <span>Address (Arabic)</span>
+                                <span class="auto-fill-hint">Auto-filled from English</span>
+                            </label>
+                            <textarea class="form-control" rows="2" name="ArabicAddress" [(ngModel)]="company.ArabicAddress"
+                                (ngModelChange)="onArabicAddressEdited()" dir="rtl"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">VAT Registration Number</label>
+                            <input type="text" class="form-control" name="VATNumber" [(ngModel)]="company.VATNumber" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Email</label>
+                            <input type="email" class="form-control" name="Email" [(ngModel)]="company.Email" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Phone</label>
+                            <input type="text" class="form-control" name="Phone" [(ngModel)]="company.Phone" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Website</label>
+                            <input type="text" class="form-control" name="Website" [(ngModel)]="company.Website" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Country</label>
+                            <input type="text" class="form-control" name="Country" [(ngModel)]="company.Country" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">City</label>
+                            <input type="text" class="form-control" name="City" [(ngModel)]="company.City" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Logo URL</label>
+                            <input type="text" class="form-control" name="LogoPath" [(ngModel)]="company.LogoPath" placeholder="https://..." />
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Stamp URL</label>
+                            <input type="text" class="form-control" name="StampPath" [(ngModel)]="company.StampPath" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <hr class="my-3" />
+                    <h5 class="mb-3">Bank Details</h5>
+
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Beneficiary Name</label>
+                            <input type="text" class="form-control" name="BeneficiaryName" [(ngModel)]="company.BeneficiaryName" />
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="mb-1">Bank Name</label>
+                            <input type="text" class="form-control" name="BankName" [(ngModel)]="company.BankName" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Account Currency</label>
+                            <input type="text" class="form-control" name="AccountCurrency" [(ngModel)]="company.AccountCurrency" placeholder="SAUDI RIYAL" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Account Number</label>
+                            <input type="text" class="form-control" name="BankAccountNumber" [(ngModel)]="company.BankAccountNumber" />
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">IBAN</label>
+                            <input type="text" class="form-control" name="IBAN" [(ngModel)]="company.IBAN" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">SWIFT Code</label>
+                            <input type="text" class="form-control" name="SwiftCode" [(ngModel)]="company.SwiftCode" />
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="button" class="cmp-btn" [disabled]="isSaving" (click)="onSave()">
+                            {{ isSaving ? 'Saving...' : 'Save Company Details' }}
+                        </button>
+                    </div>
+                </form>
+
+                <div *ngIf="isLoading" class="module-loading-state">Loading...</div>
+            </div>
+        </section>
+    </div>
+</div>

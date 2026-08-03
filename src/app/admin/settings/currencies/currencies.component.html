@@ -1,0 +1,90 @@
+<div class="content-wrapper ms-4">
+    <div class="container-full">
+        <section class="content">
+            <div class="module-page-card">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h3 class="module-title">Currencies</h3>
+                        <p class="module-subtitle">Manage currencies and exchange rates used on invoices</p>
+                    </div>
+                    <div class="module-toolbar">
+                        <a href="javascript:;" (click)="openAdd()" class="btn-primary-pill">
+                            <i class="fa fa-plus"></i> Add Currency</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-table-card" *ngIf="showForm" style="padding: 20px; margin-bottom: 16px;">
+                <div class="row">
+                    <div class="col-lg-3 mb-2">
+                        <label class="mb-1">Code *</label>
+                        <input type="text" class="form-control" [(ngModel)]="editModel.Code" placeholder="SAR" maxlength="10" />
+                    </div>
+                    <div class="col-lg-3 mb-2">
+                        <label class="mb-1">Name *</label>
+                        <input type="text" class="form-control" [(ngModel)]="editModel.Name" placeholder="Saudi Riyal" />
+                    </div>
+                    <div class="col-lg-2 mb-2">
+                        <label class="mb-1">Symbol</label>
+                        <input type="text" class="form-control" [(ngModel)]="editModel.Symbol" placeholder="ر.س" />
+                    </div>
+                    <div class="col-lg-2 mb-2">
+                        <label class="mb-1">Exchange Rate</label>
+                        <input type="number" step="0.000001" class="form-control" [(ngModel)]="editModel.ExchangeRate" />
+                    </div>
+                    <div class="col-lg-2 mb-2">
+                        <label class="mb-1">Status</label>
+                        <select class="form-select" [(ngModel)]="editModel.IsActive">
+                            <option [ngValue]="true">Active</option>
+                            <option [ngValue]="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button class="cmp-btn" [disabled]="isSaving" (click)="onSave()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+                    <button class="btn btn-outline-secondary" (click)="cancelForm()">Cancel</button>
+                </div>
+            </div>
+
+            <div class="module-table-card">
+                <table class="module-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">S.No</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Exchange Rate</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 90px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="isLoading">
+                            <td colspan="7" class="module-loading-state">Loading...</td>
+                        </tr>
+                        <tr *ngIf="!isLoading && !currencies?.length">
+                            <td colspan="7" class="module-empty-state">No currencies found. Add one to get started.</td>
+                        </tr>
+                        <tr *ngFor="let item of currencies; let i = index;">
+                            <td>{{ i + 1 }}</td>
+                            <td class="fw-600">{{ item.Code }}</td>
+                            <td>{{ item.Name }}</td>
+                            <td>{{ item.Symbol || '-' }}</td>
+                            <td>{{ item.ExchangeRate }}</td>
+                            <td>
+                                <span class="status-pill" [ngClass]="item.IsActive ? 'active' : 'inactive'">
+                                    {{ item.IsActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="javascript:;" (click)="openEdit(item)"
+                                    class="row-action-btn" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

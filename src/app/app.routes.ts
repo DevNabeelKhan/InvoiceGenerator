@@ -35,6 +35,26 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/products/products.component').then(m => m.ProductsComponent), canActivate: [AuthGuard],
     },
     {
+        path: 'invoices',
+        loadComponent: () => import('./admin/invoices/invoices.component').then(m => m.InvoicesComponent), canActivate: [AuthGuard],
+    },
+    {
+        path: 'invoices/new',
+        loadComponent: () => import('./admin/invoices/invoice-edit/invoice-edit.component').then(m => m.InvoiceEditComponent), canActivate: [AuthGuard],
+    },
+    {
+        path: 'invoices/edit/:id',
+        loadComponent: () => import('./admin/invoices/invoice-edit/invoice-edit.component').then(m => m.InvoiceEditComponent), canActivate: [AuthGuard],
+    },
+    {
+        path: 'settings/company',
+        loadComponent: () => import('./admin/settings/company-settings/company-settings.component').then(m => m.CompanySettingsComponent), canActivate: [AuthGuard],
+    },
+    {
+        path: 'settings/currencies',
+        loadComponent: () => import('./admin/settings/currencies/currencies.component').then(m => m.CurrenciesComponent), canActivate: [AuthGuard],
+    },
+    {
         path: 'configuration/:type',
         loadComponent: () => import('./admin/configuration/configuration-list/configuration-list.component').then(m => m.ConfigurationListComponent), canActivate: [AuthGuard],
     }

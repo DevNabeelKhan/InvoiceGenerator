@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ selectedId ? 'Edit Currency' : 'Add Currency' }}</h2>
+<mat-dialog-content>
+    <form #form="ngForm">
+        <div class="row mt-2 px-2">
+            <div class="col-lg-4 mb-2">
+                <label class="mb-1">Code <span class="text-danger">*</span></label>
+                <input type="text" name="Code" [(ngModel)]="currencyModel.Code" class="form-control"
+                    placeholder="SAR" maxlength="10" required autofocus>
+            </div>
+            <div class="col-lg-8 mb-2">
+                <label class="mb-1">Name <span class="text-danger">*</span></label>
+                <input type="text" name="Name" [(ngModel)]="currencyModel.Name" class="form-control"
+                    placeholder="Saudi Riyal" required>
+            </div>
+        </div>
+
+        <div class="row mt-2 px-2">
+            <div class="col-lg-6 mb-2">
+                <label class="mb-1">Symbol</label>
+                <input type="text" name="Symbol" [(ngModel)]="currencyModel.Symbol" class="form-control"
+                    placeholder="ر.س">
+            </div>
+            <div class="col-lg-6 mb-2">
+                <label class="mb-1">Exchange Rate</label>
+                <input type="number" step="0.000001" name="ExchangeRate" [(ngModel)]="currencyModel.ExchangeRate"
+                    class="form-control">
+            </div>
+        </div>
+
+        <div class="row mt-2 px-2" *ngIf="selectedId">
+            <div class="col-lg-6 mb-2">
+                <label class="mb-1">Status</label>
+                <select class="form-select" name="IsActive" [(ngModel)]="currencyModel.IsActive">
+                    <option [ngValue]="true">Active</option>
+                    <option [ngValue]="false">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="div-right">
+        <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+    </div>
+</mat-dialog-actions>

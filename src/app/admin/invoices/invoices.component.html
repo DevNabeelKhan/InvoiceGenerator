@@ -1,0 +1,95 @@
+<div class="content-wrapper ms-4">
+    <div class="container-full">
+        <section class="content">
+
+            <div class="module-page-card">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h3 class="module-title">Invoices</h3>
+                        <p class="module-subtitle">Create, manage and track your tax invoices</p>
+                    </div>
+                    <div class="module-toolbar">
+                        <div class="module-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Search invoice, customer..." [(ngModel)]="searchText"
+                                (ngModelChange)="onSearchChange()" />
+                        </div>
+                        <select class="module-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+                            <option value="">All Status</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Sent">Sent</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <a href="javascript:;" (click)="createInvoice()" class="btn-primary-pill">
+                            <i class="fa fa-plus"></i> New Invoice</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-table-card">
+                <table class="module-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">S.No</th>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th>Invoice Date</th>
+                            <th>Due Date</th>
+                            <th>Grand Total</th>
+                            <th style="width: 110px;">Status</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="isLoading">
+                            <td colspan="8" class="module-loading-state">Loading...</td>
+                        </tr>
+
+                        <tr *ngIf="!isLoading && !invoices?.length">
+                            <td colspan="8" class="module-empty-state">No invoices found</td>
+                        </tr>
+
+                        <tr *ngFor="let item of invoices; let i = index;">
+                            <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+                            <td class="fw-600">{{ item.InvoiceNumber }}</td>
+                            <td>{{ item.CustomerName || '-' }}</td>
+                            <td>{{ item.InvoiceDate | date:'yyyy-MM-dd' }}</td>
+                            <td>{{ item.DueDate | date:'yyyy-MM-dd' }}</td>
+                            <td class="fw-600">{{ item.CurrencyCode }} {{ item.GrandTotal | number:'1.2-2' }}</td>
+                            <td>
+                                <span class="status-pill" [ngClass]="statusBadgeClass(item.Status)">
+                                    {{ item.Status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="javascript:;" (click)="editInvoice(item.Id!)"
+                                    class="row-action-btn" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="javascript:;" (click)="downloadPdf(item.Id!)"
+                                    class="row-action-btn" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></a>
+                                <a href="javascript:;" (click)="openDeleteModal(item.Id!)"
+                                    class="row-action-btn danger" title="Delete"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="module-pagination-bar" *ngIf="!isLoading && invoices?.length">
+                    <span>Showing {{ (pageNumber - 1) * pageSize + 1 }}-{{ (pageNumber - 1) * pageSize + invoices.length }} of {{ totalRecords }} entries</span>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="pager-btn" [disabled]="pageNumber <= 1" (click)="goToPage(pageNumber - 1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button *ngFor="let p of pageNumbers" class="pager-btn"
+                            [class.active-page]="p === pageNumber" (click)="goToPage(p)">{{ p }}</button>
+                        <button class="pager-btn" [disabled]="pageNumber >= totalPages" (click)="goToPage(pageNumber + 1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<router-outlet></router-outlet>
