@@ -1,42 +1,64 @@
-<section class="login loginBox">
-    <div class="login_box">
-        <div class="left">
-              <div class="contact">
-                
-                <form #form="ngForm" (ngSubmit)="onSubmit()">
-                    <h3>SIGN IN</h3>
-                    <input type="text" placeholder="USERNAME"   [(ngModel)]="UserModel.userId"  name="uname" #uname="ngModel"  [pattern]="'^[a-zA-Z0-9.-]*$'" required>
-                    <ng-container *ngIf="uname.touched && !uname.value">
-                        <p class="error-red">USERNAME is required </p>
-                    </ng-container>
-                    <ng-container *ngIf="uname.touched && uname.invalid && uname.value">
-                        <p class="error-red">USERNAME should not contain spaces or special characters </p>
-                    </ng-container> 
-                    <input type="password" placeholder="PASSWORD"  minlength="3" name="pass" #pass="ngModel" [(ngModel)]="UserModel.Password" maxlength="100" required>
-                    <ng-container *ngIf="pass.touched && !pass.value">
-                        <p class="error-red">Password is required </p>
-                    </ng-container>
-                    <ng-container *ngIf="pass.touched && pass.invalid && pass.value">
-                        <p class="error-red">Password is Invalid </p>
-                    </ng-container>  
-                    <button class="submit" type="submit" [disabled]="form.invalid">
-                        <ng-container *ngIf="!IsLoader">
-                            LET'S GO
-                          </ng-container>
-                          <ng-container *ngIf="IsLoader">
-                            <i class="fa fa-spinner fa-spin"></i> Loading
-                          </ng-container>
-                    </button>
-                </form>
-            </div>
-        </div>
-        <!-- <div class="right">
-            <div class="right-text">
-                <h2>ONFINIO</h2>
-                <h5>MADICAL BILLING LLC</h5>
-            </div>
-            <div class="right-inductor">
-                <img src="https://lh3.googleusercontent.com/fife/ABSRlIoGiXn2r0SBm7bjFHea6iCUOyY0N2SrvhNUT-orJfyGNRSMO2vfqar3R-xs5Z4xbeqYwrEMq2FXKGXm-l_H6QAlwCBk9uceKBfG-FjacfftM0WM_aoUC_oxRSXXYspQE3tCMHGvMBlb2K1NAdU6qWv3VAQAPdCo8VwTgdnyWv08CmeZ8hX_6Ty8FzetXYKnfXb0CTEFQOVF4p3R58LksVUd73FU6564OsrJt918LPEwqIPAPQ4dMgiH73sgLXnDndUDCdLSDHMSirr4uUaqbiWQq-X1SNdkh-3jzjhW4keeNt1TgQHSrzW3maYO3ryueQzYoMEhts8MP8HH5gs2NkCar9cr_guunglU7Zqaede4cLFhsCZWBLVHY4cKHgk8SzfH_0Rn3St2AQen9MaiT38L5QXsaq6zFMuGiT8M2Md50eS0JdRTdlWLJApbgAUqI3zltUXce-MaCrDtp_UiI6x3IR4fEZiCo0XDyoAesFjXZg9cIuSsLTiKkSAGzzledJU3crgSHjAIycQN2PH2_dBIa3ibAJLphqq6zLh0qiQn_dHh83ru2y7MgxRU85ithgjdIk3PgplREbW9_PLv5j9juYc1WXFNW9ML80UlTaC9D2rP3i80zESJJY56faKsA5GVCIFiUtc3EewSM_C0bkJSMiobIWiXFz7pMcadgZlweUdjBcjvaepHBe8wou0ZtDM9TKom0hs_nx_AKy0dnXGNWI1qftTjAg=w1920-h979-ft" alt=""></div>
-        </div> -->
+<div class="login-page">
+  <!-- Logo at top -->
+  <div class="login-logo">
+    <svg width="44" height="36" viewBox="0 0 44 36" fill="none">
+      <!-- <path d="M6 6L12 30H16L22 14L28 30H32L38 6H34L29.5 24L23.5 6H20.5L14.5 24L10 6H6Z" fill="#4f46e5"/> -->
+    </svg>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card">
+    <h1 class="login-title">Welcome back!</h1>
+    <p class="login-subtitle">Sign in to get back to your Onfinio account.</p>
+
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label class="form-label">Email*</label>
+        <input type="text" class="login-input" placeholder="Required"
+          [(ngModel)]="UserModel.userId" name="uname" #uname="ngModel"
+          [pattern]="'^[a-zA-Z0-9.@-]*$'" required />
+        <p class="field-error" *ngIf="uname.touched && !uname.value">Email is required</p>
+        <p class="field-error" *ngIf="uname.touched && uname.invalid && uname.value">Enter a valid email</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password*</label>
+        <input type="password" class="login-input" placeholder="Required"
+          [(ngModel)]="UserModel.Password" name="pass" #pass="ngModel"
+          minlength="3" maxlength="100" required />
+        <p class="field-error" *ngIf="pass.touched && !pass.value">Password is required</p>
+        <p class="field-error" *ngIf="pass.touched && pass.invalid && pass.value">Password is invalid</p>
+      </div>
+
+      <button class="btn-signin" type="submit" [disabled]="form.invalid || IsLoader">
+        <ng-container *ngIf="!IsLoader">Sign in</ng-container>
+        <ng-container *ngIf="IsLoader"><i class="fa fa-spinner fa-spin"></i> Signing in...</ng-container>
+      </button>
+    </form>
+
+    <!-- <a href="javascript:;" class="forgot-link">Forgot password?</a> -->
+
+    <div class="divider">
+      <span>or</span>
     </div>
-</section>
+
+    <button class="btn-google" (click)="signInWithGoogle()">
+      <span class="google-icon-wrap">
+        <svg class="google-icon" width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+      </span>
+      <span class="google-text">Continue with Google</span>
+    </button>
+
+    <a href="javascript:;" class="create-account-link">Don't have an account? Let's create one</a>
+
+    <p class="terms-text">
+      By using Onfinio, you agree to the <a href="javascript:;">Terms of Service</a> and
+      <a href="javascript:;">Privacy Policy</a>
+    </p>
+  </div>
+</div>

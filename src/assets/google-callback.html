@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google Sign-In</title>
+</head>
+<body>
+  <p>Signing in...</p>
+  <script>
+    (function() {
+      var hash = window.location.hash.substring(1);
+      var params = {};
+      hash.split('&').forEach(function(part) {
+        var item = part.split('=');
+        params[item[0]] = decodeURIComponent(item[1]);
+      });
+      if (params.id_token) {
+        window.opener.postMessage({ idToken: params.id_token }, window.location.origin);
+      } else {
+        window.opener.postMessage({ error: 'No token received' }, window.location.origin);
+      }
+      window.close();
+    })();
+  </script>
+</body>
+</html>

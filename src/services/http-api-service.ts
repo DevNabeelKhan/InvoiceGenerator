@@ -14,6 +14,9 @@ export class HttpApiService {
    async Login(body: any): Promise<any> {
         return await this.httpService.post<any>('Auth/login', body)
     }
+    async GoogleLogin(body: any): Promise<any> {
+        return await this.httpService.post<any>('Auth/google-login', body)
+    }
     async ChangePassword(body: any): Promise<any> {
         return await this.httpService.post<any>('Auth/ChangePassword', body)
     }
