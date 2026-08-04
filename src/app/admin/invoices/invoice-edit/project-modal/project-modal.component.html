@@ -1,0 +1,51 @@
+<div class="wf-modal">
+    <div class="wf-modal-header">
+        <button type="button" class="wf-close-btn" (click)="cancel()" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="wf-modal-header-text">
+            <h2 class="wf-modal-title">{{ selectedId ? 'Edit project' : 'Add project' }}</h2>
+        </div>
+        <div class="wf-modal-header-actions">
+            <button type="button" class="btn-attachments" (click)="triggerFileSelect()" [disabled]="isUploading">
+                <i class="fa-solid fa-paperclip"></i> Attachments
+                <span class="attachment-badge" *ngIf="attachmentCount">{{ attachmentCount }}</span>
+            </button>
+            <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        </div>
+        <input #fileInput type="file" multiple hidden (change)="onFileSelected($event)" />
+    </div>
+
+    <mat-dialog-content class="wf-modal-content">
+        <form #form="ngForm">
+            <div class="wf-field">
+                <label>Project name <span class="text-danger">*</span></label>
+                <input type="text" name="Title" [(ngModel)]="projectModel.Title" class="form-control"
+                    placeholder="Required" required autofocus>
+            </div>
+
+            <div class="doc-section" *ngIf="documents.length || pendingFiles.length || isUploading">
+                <label>Attachments</label>
+                <div class="doc-list">
+                    <div class="doc-item" *ngFor="let doc of documents">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <a class="doc-title" [href]="doc.Url" target="_blank">{{ doc.DocumentTitle }}</a>
+                        <button type="button" class="icon-btn" (click)="removeDocument(doc)" title="Remove">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="doc-item pending" *ngFor="let file of pendingFiles; let i = index">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span class="doc-title">{{ file.name }}</span>
+                        <button type="button" class="icon-btn" (click)="removePendingFile(i)" title="Remove">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="doc-item uploading" *ngIf="isUploading">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Uploading…
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-dialog-content>
+</div>

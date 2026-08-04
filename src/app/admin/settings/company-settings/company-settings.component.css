@@ -18,3 +18,28 @@
     color: #9ca3af;
     font-style: italic;
 }
+
+.logo-upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+}
+
+.logo-preview {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 3px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.logo-upload-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}

@@ -91,15 +91,25 @@ img.img-tble {
    `.content-wrapper` rules (e.g. `.fixed .content-wrapper`) that fight over
    margin/padding depending on body classes. Rather than patch that large
    3rd-party file, we force our intended layout here. */
-.content-wrapper {
+.content-wrapper,
+.invoice-edit-wrapper {
     margin-left: 250px !important;
-    padding-top: 84px !important;
-    margin-top: 0 !important;
     transition: margin-left 0.3s ease;
 }
 
+.content-wrapper {
+    padding-top: 84px !important;
+    margin-top: 0 !important;
+}
+
+body.sidebar-closed .content-wrapper,
+body.sidebar-closed .invoice-edit-wrapper {
+    margin-left: 0 !important;
+}
+
 @media (max-width: 991.98px) {
-    .content-wrapper {
+    .content-wrapper,
+    .invoice-edit-wrapper {
         margin-left: 0 !important;
     }
 }

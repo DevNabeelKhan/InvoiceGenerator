@@ -15,7 +15,7 @@ import { Company } from '../../../shared/models/invoice.model';
 })
 export class CompanySettingsComponent {
   company: Company = {
-    Name: '',
+    Title: '',
     ArabicName: '',
     Address: '',
     ArabicAddress: '',
@@ -23,6 +23,7 @@ export class CompanySettingsComponent {
     Phone: '',
     Website: '',
     VATNumber: '',
+    LogoUrl: '',
     LogoPath: '',
     StampPath: '',
     BankName: '',
@@ -37,6 +38,8 @@ export class CompanySettingsComponent {
   };
   isLoading = false;
   isSaving = false;
+  selectedLogo: File | null = null;
+  logoPreview: string | null = null;
 
   private nameTranslateTimer: any;
   private addressTranslateTimer: any;
@@ -65,11 +68,54 @@ export class CompanySettingsComponent {
     }
   }
 
+  onLogoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      this.toastr.error('Only PNG, JPG, WEBP or SVG images are allowed');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.toastr.error('Logo must be 5 MB or smaller');
+      return;
+    }
+
+    this.selectedLogo = file;
+    this.revokeLogoPreview();
+    this.logoPreview = URL.createObjectURL(file);
+  }
+
+  get logoSrc(): string | null {
+    return this.logoPreview || this.company.LogoUrl || null;
+  }
+
+  removeLogo() {
+    this.selectedLogo = null;
+    this.revokeLogoPreview();
+    this.company.LogoUrl = '';
+  }
+
+  private revokeLogoPreview() {
+    if (this.logoPreview) {
+      URL.revokeObjectURL(this.logoPreview);
+      this.logoPreview = null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.revokeLogoPreview();
+  }
+
   onNameChange() {
     clearTimeout(this.nameTranslateTimer);
     if (this.arabicNameManuallyEdited) return;
     this.nameTranslateTimer = setTimeout(async () => {
-      const translated = await this.translationService.translateToArabic(this.company.Name);
+      const translated = await this.translationService.translateToArabic(this.company.Title);
       if (translated && !this.arabicNameManuallyEdited) {
         this.company.ArabicName = translated;
       }
@@ -96,7 +142,7 @@ export class CompanySettingsComponent {
   }
 
   isValid(): boolean {
-    return !!(this.company.Name && this.company.Name.trim().length > 0);
+    return !!(this.company.Title && this.company.Title.trim().length > 0);
   }
 
   async onSave() {
@@ -106,10 +152,13 @@ export class CompanySettingsComponent {
     }
     this.isSaving = true;
     try {
-      const res: any = await this.api.InsertUpdateCompany(this.company);
+      const res: any = await this.api.InsertUpdateCompany(this.company, this.selectedLogo);
       if (res?.statusCode == 200) {
         this.toastr.success('Company details saved successfully');
         this.company.Id = res.data?.Id ?? this.company.Id;
+        this.company.LogoUrl = res.data?.LogoUrl ?? this.company.LogoUrl;
+        this.selectedLogo = null;
+        this.revokeLogoPreview();
       } else {
         this.toastr.error(res?.message || 'Something went wrong');
       }

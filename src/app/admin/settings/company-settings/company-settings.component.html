@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Company Name (English) *</label>
-                            <input type="text" class="form-control" name="Name" [(ngModel)]="company.Name"
+                            <input type="text" class="form-control" name="Title" [(ngModel)]="company.Title"
                                 (ngModelChange)="onNameChange()" required />
                         </div>
                         <div class="col-lg-6 mb-3">
@@ -73,11 +73,29 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-lg-6 mb-3">
-                            <label class="mb-1">Logo URL</label>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Logo</label>
+                            <div class="logo-upload">
+                                <img *ngIf="logoSrc" [src]="logoSrc" class="logo-preview" alt="logo" />
+                                <div class="logo-upload-actions">
+                                    <input type="file" #logoInput class="d-none" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                                        (change)="onLogoSelected($event)" />
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="logoInput.click()">
+                                        <i class="fa-solid fa-upload"></i>
+                                        {{ logoSrc ? 'Replace' : 'Choose logo' }}
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-sm text-danger" *ngIf="logoSrc"
+                                        (click)="removeLogo()">Remove</button>
+                                </div>
+                            </div>
+                            <small class="auto-fill-hint d-block" *ngIf="selectedLogo">Will be uploaded when you save</small>
+                            <small class="text-muted d-block text-truncate" *ngIf="!selectedLogo && company.LogoUrl">{{ company.LogoUrl }}</small>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="mb-1">Logo Path</label>
                             <input type="text" class="form-control" name="LogoPath" [(ngModel)]="company.LogoPath" placeholder="https://..." />
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label class="mb-1">Stamp URL</label>
                             <input type="text" class="form-control" name="StampPath" [(ngModel)]="company.StampPath" placeholder="https://..." />
                         </div>

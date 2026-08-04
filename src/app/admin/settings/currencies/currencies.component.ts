@@ -17,7 +17,7 @@ export class CurrenciesComponent {
   isLoading = false;
   isSaving = false;
 
-  editModel: Currency = { Code: '', Name: '', Symbol: '', ExchangeRate: 1, IsActive: true };
+  editModel: Currency = { Code: '', Title: '', Symbol: '', ExchangeRate: 1, IsActive: true };
   editingId: number | null = null;
   showForm = false;
 
@@ -38,7 +38,7 @@ export class CurrenciesComponent {
   }
 
   openAdd() {
-    this.editModel = { Code: '', Name: '', Symbol: '', ExchangeRate: 1, IsActive: true };
+    this.editModel = { Code: '', Title: '', Symbol: '', ExchangeRate: 1, IsActive: true };
     this.editingId = null;
     this.showForm = true;
   }
@@ -54,7 +54,7 @@ export class CurrenciesComponent {
   }
 
   isValid(): boolean {
-    return !!(this.editModel.Code && this.editModel.Name);
+    return !!(this.editModel.Code && this.editModel.Title);
   }
 
   async onSave() {

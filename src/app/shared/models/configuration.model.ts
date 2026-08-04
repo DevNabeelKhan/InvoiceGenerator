@@ -26,6 +26,7 @@ export const CONFIGURATION_TYPES: ConfigurationTypeInfo[] = [
     { slug: 'invoicing-relationship', tableName: 'InvoicingRelationShip', title: 'Invoicing Relationships', singular: 'Invoicing Relationship', icon: 'fa-solid fa-handshake' },
     { slug: 'payment-term', tableName: 'PaymentTerm', title: 'Payment Terms', singular: 'Payment Term', icon: 'fa-solid fa-calendar-days' },
     { slug: 'revenue-tax-rate-type', tableName: 'RevenueTaxRateType', title: 'Revenue Tax Rate Types', singular: 'Revenue Tax Rate Type', icon: 'fa-solid fa-percent' },
+    { slug: 'revenue-recognition', tableName: 'RevenueRecognitionType', title: 'Revenue Recognition Types', singular: 'Revenue Recognition Type', icon: 'fa-solid fa-chart-line' },
     { slug: 'role', tableName: 'Role', title: 'Roles', singular: 'Role', icon: 'fa-solid fa-user-shield' },
     { slug: 'unit-of-measure', tableName: 'UnitOfMeasure', title: 'Unit Of Measures', singular: 'Unit Of Measure', icon: 'fa-solid fa-ruler' },
     { slug: 'product-status', tableName: 'ProductStatus', title: 'Product Statuses', singular: 'Product Status', icon: 'fa-solid fa-tags' },
