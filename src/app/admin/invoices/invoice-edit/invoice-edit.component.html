@@ -62,51 +62,79 @@
       </div>
 
       <div class="form-row">
-        <label class="d-flex justify-content-between">
-          <span>Issuer *</span>
-          <a href="javascript:;" class="quick-add-link" (click)="openAddCompany()">+ Add new</a>
-        </label>
-        <div class="entity-select-box">
-          <div class="entity-select-avatar">
-            <img *ngIf="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" [src]="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" alt="logo" />
-            <i *ngIf="!selectedCompany?.LogoUrl && !selectedCompany?.LogoPath" class="fa-solid fa-building"></i>
+        <label>Issuer *</label>
+        <div class="project-combo company-combo" [class.open]="showCompanyDropdown">
+          <div class="entity-select-box" *ngIf="!showCompanyDropdown" (click)="openCompanyDropdown()">
+            <div class="entity-select-avatar">
+              <img *ngIf="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" [src]="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" alt="logo" />
+              <i *ngIf="!selectedCompany?.LogoUrl && !selectedCompany?.LogoPath" class="fa-solid fa-building"></i>
+            </div>
+            <div class="entity-select-text">
+              <div class="entity-select-title" *ngIf="selectedCompany">{{ selectedCompany.Title }}</div>
+              <div class="entity-select-title placeholder" *ngIf="!selectedCompany">Select company…</div>
+              <div class="entity-select-sub" *ngIf="selectedCompany?.Address">{{ selectedCompany?.Address }}</div>
+            </div>
+            <a href="javascript:;" class="entity-select-clear" *ngIf="selectedCompany" title="Edit company"
+              (click)="editSelectedCompany(); $event.stopPropagation()">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <i class="fa-solid fa-chevron-down entity-select-chevron" *ngIf="!selectedCompany"></i>
           </div>
-          <div class="entity-select-text">
-            <div class="entity-select-title" *ngIf="selectedCompany">{{ selectedCompany.Title }}</div>
-            <div class="entity-select-title placeholder" *ngIf="!selectedCompany">Select company…</div>
-            <div class="entity-select-sub" *ngIf="selectedCompany?.Address">{{ selectedCompany?.Address }}</div>
+
+          <div class="project-combo-input" *ngIf="showCompanyDropdown">
+            <input type="text" class="form-control" [(ngModel)]="companySearchText" name="companySearch"
+              placeholder="Search company…" autofocus (keydown.escape)="closeCompanyDropdown()" />
+            <i class="fa-solid fa-xmark project-combo-close" (click)="closeCompanyDropdown()"></i>
           </div>
-          <i class="fa-solid fa-chevron-down entity-select-chevron"></i>
-          <select class="entity-select-native" [(ngModel)]="invoice.CompanyId" (ngModelChange)="onCompanyChange()">
-            <option [ngValue]="null">Select company…</option>
-            <option *ngFor="let c of companies" [ngValue]="c.Id">{{ c.Title }}</option>
-          </select>
+
+          <div class="project-dropdown-panel" *ngIf="showCompanyDropdown">
+            <a href="javascript:;" class="project-create-link" (click)="openAddCompany()">+ Create Branch</a>
+            <div class="project-option" *ngFor="let c of filteredCompanies"
+              [class.selected]="c.Id === invoice.CompanyId" (click)="selectCompany(c)">
+              <span>{{ c.Title }}</span>
+              <i class="fa-solid fa-check" *ngIf="c.Id === invoice.CompanyId"></i>
+            </div>
+            <div class="project-option-empty" *ngIf="!filteredCompanies.length">No companies found</div>
+          </div>
         </div>
       </div>
 
       <div class="form-row">
-        <label class="d-flex justify-content-between">
-          <span>Customer *</span>
-          <a href="javascript:;" class="quick-add-link" (click)="openAddCustomer()">+ Add new</a>
-        </label>
-        <div class="entity-select-box">
-          <div class="entity-select-avatar round">
-            <i class="fa-solid fa-user"></i>
+        <label>Customer *</label>
+        <div class="project-combo customer-combo" [class.open]="showCustomerDropdown">
+          <div class="entity-select-box" *ngIf="!showCustomerDropdown" (click)="openCustomerDropdown()">
+            <div class="entity-select-avatar round">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="entity-select-text">
+              <div class="entity-select-title" *ngIf="selectedCustomer">{{ selectedCustomer.CustomerName }}</div>
+              <div class="entity-select-title placeholder" *ngIf="!selectedCustomer">Select customer…</div>
+              <div class="entity-select-sub" *ngIf="selectedCustomer?.TaxRegistrationNumber">VAT Number {{ selectedCustomer?.TaxRegistrationNumber }}</div>
+            </div>
+            <a href="javascript:;" class="entity-select-clear" *ngIf="selectedCustomer" title="Clear"
+              (click)="invoice.CustomerId = null; onCustomerChange(); $event.stopPropagation()">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+            <i class="fa-solid fa-pen entity-select-chevron" *ngIf="selectedCustomer" title="Edit customer"
+              (click)="openEditCustomer(); $event.stopPropagation()"></i>
+            <i class="fa-solid fa-chevron-down entity-select-chevron" *ngIf="!selectedCustomer"></i>
           </div>
-          <div class="entity-select-text">
-            <div class="entity-select-title" *ngIf="selectedCustomer">{{ selectedCustomer.CustomerName }}</div>
-            <div class="entity-select-title placeholder" *ngIf="!selectedCustomer">Select customer…</div>
-            <div class="entity-select-sub" *ngIf="selectedCustomer?.TaxRegistrationNumber">VAT Number {{ selectedCustomer?.TaxRegistrationNumber }}</div>
+
+          <div class="project-combo-input" *ngIf="showCustomerDropdown">
+            <input type="text" class="form-control" [(ngModel)]="customerSearchText" name="customerSearch"
+              placeholder="Search contact…" autofocus (keydown.escape)="closeCustomerDropdown()" />
+            <i class="fa-solid fa-xmark project-combo-close" (click)="closeCustomerDropdown()"></i>
           </div>
-          <a href="javascript:;" class="entity-select-clear" *ngIf="selectedCustomer" title="Clear"
-            (click)="invoice.CustomerId = null; onCustomerChange(); $event.stopPropagation()">
-            <i class="fa-solid fa-xmark"></i>
-          </a>
-          <i class="fa-solid fa-chevron-down entity-select-chevron" *ngIf="!selectedCustomer"></i>
-          <select class="entity-select-native" [(ngModel)]="invoice.CustomerId" (ngModelChange)="onCustomerChange()">
-            <option [ngValue]="null">Select customer…</option>
-            <option *ngFor="let c of customers" [ngValue]="c.Id">{{ c.CustomerName }}</option>
-          </select>
+
+          <div class="project-dropdown-panel" *ngIf="showCustomerDropdown">
+            <a href="javascript:;" class="project-create-link" (click)="openAddCustomer()">+ Create contact</a>
+            <div class="project-option" *ngFor="let c of filteredCustomers"
+              [class.selected]="c.Id === invoice.CustomerId" (click)="selectCustomer(c)">
+              <span>{{ c.CustomerName }}</span>
+              <i class="fa-solid fa-check" *ngIf="c.Id === invoice.CustomerId"></i>
+            </div>
+            <div class="project-option-empty" *ngIf="!filteredCustomers.length">No contacts found</div>
+          </div>
         </div>
         <div class="field-error-pill" *ngIf="attemptedSave && !invoice.CustomerId">Choose a contact</div>
       </div>
@@ -124,12 +152,12 @@
 
       <div class="form-row" *ngIf="visibleFields.purchaseOrder">
         <label>Purchase order</label>
-        <input type="text" class="form-control" [(ngModel)]="invoice.PurchaseOrderNumber" placeholder="Enter PO number(s)" />
+        <input type="text" class="form-control" [(ngModel)]="invoice.PurchaseOrderNumber" placeholder="Optional" />
       </div>
 
       <div class="form-row" *ngIf="visibleFields.reference">
         <label>Reference</label>
-        <input type="text" class="form-control" [(ngModel)]="invoice.Reference" placeholder="Enter reference" />
+        <input type="text" class="form-control" [(ngModel)]="invoice.Reference" placeholder="Optional" />
       </div>
 
       <div class="form-row" *ngIf="visibleFields.project">
@@ -138,7 +166,7 @@
           <div class="entity-select-box" *ngIf="!showProjectDropdown" (click)="openProjectDropdown()">
             <div class="entity-select-text">
               <div class="entity-select-title" *ngIf="invoice.ProjectName">{{ invoice.ProjectName }}</div>
-              <div class="entity-select-title placeholder" *ngIf="!invoice.ProjectName">Select or create project…</div>
+              <div class="entity-select-title placeholder" *ngIf="!invoice.ProjectName">Optional</div>
             </div>
             <a href="javascript:;" class="entity-select-clear" *ngIf="invoice.ProjectName" title="Clear"
               (click)="clearProject(); $event.stopPropagation()">
@@ -166,20 +194,37 @@
         </div>
       </div>
 
-      <div class="form-row two-col">
-        <div>
-          <label class="d-flex justify-content-between">
-            <span>Currency *</span>
-            <a href="javascript:;" class="quick-add-link" (click)="openAddCurrency()">+ Add new</a>
-          </label>
-          <select class="form-select" [(ngModel)]="invoice.CurrencyId" (ngModelChange)="onCurrencyChange()">
-            <option [ngValue]="null">Select…</option>
-            <option *ngFor="let c of currencies" [ngValue]="c.Id">{{ c.Code }}</option>
-          </select>
-        </div>
-        <div>
-          <label>Exchange rate</label>
-          <input type="number" step="0.000001" class="form-control" [(ngModel)]="invoice.ExchangeRate" />
+      <div class="form-row" *ngIf="visibleFields.warehouse">
+        <label>Warehouse</label>
+        <div class="project-combo warehouse-combo" [class.open]="showWarehouseDropdown">
+          <div class="entity-select-box" *ngIf="!showWarehouseDropdown" (click)="openWarehouseDropdown()">
+            <div class="entity-select-text">
+              <div class="entity-select-title" *ngIf="invoice.WarehouseName">{{ invoice.WarehouseName }}</div>
+              <div class="entity-select-title placeholder" *ngIf="!invoice.WarehouseName">Optional</div>
+            </div>
+            <a href="javascript:;" class="entity-select-clear" *ngIf="invoice.WarehouseName" title="Clear"
+              (click)="clearWarehouse(); $event.stopPropagation()">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+            <i class="fa-solid fa-pen entity-select-chevron" *ngIf="invoice.WarehouseName" title="Edit warehouse"
+              (click)="editSelectedWarehouse(); $event.stopPropagation()"></i>
+          </div>
+
+          <div class="project-combo-input" *ngIf="showWarehouseDropdown">
+            <input type="text" class="form-control" [(ngModel)]="warehouseSearchText" name="warehouseSearch"
+              placeholder="Search warehouse…" autofocus (keydown.escape)="closeWarehouseDropdown()" />
+            <i class="fa-solid fa-xmark project-combo-close" (click)="closeWarehouseDropdown()"></i>
+          </div>
+
+          <div class="project-dropdown-panel" *ngIf="showWarehouseDropdown">
+            <a href="javascript:;" class="project-create-link" (click)="openAddWarehouse()">+ Create warehouse</a>
+            <div class="project-option" *ngFor="let w of filteredWarehouses"
+              [class.selected]="w.Id === invoice.WarehouseId" (click)="selectWarehouse(w)">
+              <span>{{ w.Name }}</span>
+              <i class="fa-solid fa-check" *ngIf="w.Id === invoice.WarehouseId"></i>
+            </div>
+            <div class="project-option-empty" *ngIf="!filteredWarehouses.length">No warehouses found</div>
+          </div>
         </div>
       </div>
 
@@ -220,10 +265,10 @@
               <th>Description *</th>
               <th style="width: 70px;">Qty *</th>
               <th style="width: 90px;">Price</th>
-              <th style="width: 70px;" *ngIf="visibleLineFields.taxRate">Tax rate</th>
+              <th style="width: 85px;" *ngIf="visibleLineFields.taxRate">Tax rate</th>
               <th style="width: 160px;" *ngIf="visibleLineFields.account">Account *</th>
-              <th style="width: 100px;" *ngIf="visibleLineFields.discount">Discount</th>
-              <th style="width: 160px;" *ngIf="visibleLineFields.revenueRecognition">Revenue recognition</th>
+              <th style="width: 110px;" *ngIf="visibleLineFields.discount">Discount</th>
+              <th style="width: 170px;" *ngIf="visibleLineFields.revenueRecognition">Revenue recognition</th>
               <th style="width: 160px;" *ngIf="visibleLineFields.costCenter">Cost center</th>
               <th style="width: 100px;" class="text-end" *ngIf="visibleLineFields.total">Total</th>
               <th style="width: 70px;"></th>
@@ -235,17 +280,17 @@
               <td>
                 <div class="desc-cell">
                   <input type="text" class="form-control form-control-sm desc-input" [(ngModel)]="line.Description"
-                    placeholder="Description or search items…" (ngModelChange)="recalculateLine(line)" />
-                  <div class="desc-picker" title="Pick an item">
-                    <i class="fa-solid fa-chevron-down"></i>
-                    <select class="desc-picker-native" [(ngModel)]="line.ProductId" (ngModelChange)="onProductSelect(line)">
-                      <option [ngValue]="null">Select item…</option>
-                      <option *ngFor="let p of products" [ngValue]="p.Id">{{ p.Title }}</option>
-                    </select>
+                    placeholder="Description or search items…" (ngModelChange)="recalculateLine(line)"
+                    (focus)="openDescDropdown(i, $event)" />
+                  <div class="desc-dropdown-panel" *ngIf="openDescDropdownIndex === i"
+                    [style.top.px]="descDropdownPos.top" [style.left.px]="descDropdownPos.left" [style.width.px]="descDropdownPos.width">
+                    <div class="desc-option" *ngFor="let p of filteredProductsForLine(line)" (click)="selectProductForLine(line, p)">
+                      <span>{{ p.Title }}</span>
+                      <span class="desc-option-price">{{ p.SellingPrice | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="desc-option-empty" *ngIf="!filteredProductsForLine(line).length">No items found</div>
+                    <a href="javascript:;" class="desc-create-link" (click)="openAddProduct(line)">+ Create item</a>
                   </div>
-                  <a href="javascript:;" class="quick-add-icon desc-add" title="Add new item" (click)="openAddProduct(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
                 </div>
                 <div class="field-error-pill" *ngIf="attemptedSave && !line.Description">Description is required</div>
               </td>
@@ -262,14 +307,11 @@
                   [(ngModel)]="line.TaxRate" (ngModelChange)="recalculateLine(line)" />
               </td>
               <td *ngIf="visibleLineFields.account">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.AccountId" (ngModelChange)="recalculateLine(line)">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new account" (click)="openAddAccount(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
+                <div class="line-select-combo" [class.open]="isLineDropdownOpen(i, 'account')">
+                  <div class="line-select-box" tabindex="0" (focus)="openLineFieldDropdown(i, 'account', $event)">
+                    <span class="line-select-title" [class.placeholder]="!line.AccountId">{{ getAccountTitle(line.AccountId) || 'Select…' }}</span>
+                    <i class="fa-solid fa-chevron-down line-select-chevron"></i>
+                  </div>
                 </div>
                 <div class="field-error-pill" *ngIf="attemptedSave && !line.AccountId">Account is required</div>
               </td>
@@ -278,25 +320,19 @@
                   [(ngModel)]="line.DiscountPercentage" (ngModelChange)="recalculateLine(line)" placeholder="Optional %" />
               </td>
               <td *ngIf="visibleLineFields.revenueRecognition">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.RevenueRecognitionId">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let r of revenueRecognitions" [ngValue]="r.Id">{{ r.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new revenue recognition" (click)="openAddRevenueRecognition(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
+                <div class="line-select-combo" [class.open]="isLineDropdownOpen(i, 'revenueRecognition')">
+                  <div class="line-select-box" tabindex="0" (focus)="openLineFieldDropdown(i, 'revenueRecognition', $event)">
+                    <span class="line-select-title" [class.placeholder]="!line.RevenueRecognitionId">{{ getRevenueRecognitionTitle(line.RevenueRecognitionId) || 'Select…' }}</span>
+                    <i class="fa-solid fa-chevron-down line-select-chevron"></i>
+                  </div>
                 </div>
               </td>
               <td *ngIf="visibleLineFields.costCenter">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.CostCenterId">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let cc of costCenters" [ngValue]="cc.Id">{{ cc.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new cost center" (click)="openAddCostCenter(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
+                <div class="line-select-combo" [class.open]="isLineDropdownOpen(i, 'costCenter')">
+                  <div class="line-select-box" tabindex="0" (focus)="openLineFieldDropdown(i, 'costCenter', $event)">
+                    <span class="line-select-title" [class.placeholder]="!line.CostCenterId">{{ getCostCenterTitle(line.CostCenterId) || 'Select…' }}</span>
+                    <i class="fa-solid fa-chevron-down line-select-chevron"></i>
+                  </div>
                 </div>
               </td>
               <td class="text-end fw-600" *ngIf="visibleLineFields.total">{{ line.LineTotal | number:'1.2-2' }}</td>
@@ -311,6 +347,17 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="line-dropdown-panel" *ngIf="openLineDropdown"
+        [style.top.px]="lineDropdownPos.top" [style.left.px]="lineDropdownPos.left" [style.width.px]="lineDropdownPos.width">
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="lineDropdownSearch" name="lineDropdownSearch"
+          placeholder="Search…" autofocus />
+        <div class="desc-option" *ngFor="let o of filteredLineOptions" (click)="selectLineOption(openLineDropdownCurrentLine!, o)">
+          <span>{{ o.Title }}</span>
+        </div>
+        <div class="desc-option-empty" *ngIf="!filteredLineOptions.length">No results found</div>
+        <a href="javascript:;" class="desc-create-link" (click)="createLineOption(openLineDropdownCurrentLine!)">{{ lineDropdownCreateLabel }}</a>
       </div>
 
       <div class="lines-footer">
@@ -364,12 +411,12 @@
         </div>
       </div>
 
-      <!-- Notes / Bank details + Stamp -->
+      <!-- Notes + Stamp -->
       <div class="notes-stamp-row">
         <div class="notes-block">
           <label>Notes</label>
           <textarea class="form-control notes-textarea" rows="7" [(ngModel)]="invoice.Notes"
-            placeholder="Bank Detail :&#10;BENEFICIARY NAME: ...&#10;BANK NAME: ...&#10;ACCOUNT CURRENCY: ...&#10;ACCOUNT NUMBER: ...&#10;IBAN: ...&#10;SWIFT CODE: ..."></textarea>
+            placeholder="Notes…"></textarea>
         </div>
         <div class="stamp-tile">
           <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" alt="Stamp" />
@@ -469,6 +516,11 @@
                 <span class="meta-val">{{ invoice.ProjectName }}</span>
                 <span class="meta-key-ar">المشروع</span>
               </div>
+              <div class="meta-row-inner" *ngIf="invoice.WarehouseName">
+                <span class="meta-key">Warehouse</span>
+                <span class="meta-val">{{ invoice.WarehouseName }}</span>
+                <span class="meta-key-ar">المستودع</span>
+              </div>
             </div>
           </div>
         </div>
@@ -553,16 +605,6 @@
         <div class="preview-notes" *ngIf="invoice.Notes">
           <strong>Notes <span class="ar">ملاحظات</span></strong>
           <p>{{ invoice.Notes }}</p>
-        </div>
-
-        <div class="preview-bank-detail">
-          <strong>Bank Detail :</strong>
-          <div *ngIf="invoice.BeneficiaryName"><b>BENEFICIARY NAME:</b> {{ invoice.BeneficiaryName }}</div>
-          <div *ngIf="invoice.CompanyBankName"><b>BANK NAME:</b> {{ invoice.CompanyBankName }}</div>
-          <div *ngIf="invoice.AccountCurrency"><b>ACCOUNT CURRENCY:</b> {{ invoice.AccountCurrency }}</div>
-          <div *ngIf="invoice.BankAccountNumber"><b>ACCOUNT NUMBER:</b> {{ invoice.BankAccountNumber }}</div>
-          <div *ngIf="invoice.IBAN"><b>IBAN:</b> {{ invoice.IBAN }}</div>
-          <div *ngIf="invoice.SwiftCode"><b>SWIFT CODE:</b> {{ invoice.SwiftCode }}</div>
         </div>
 
         <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" class="preview-stamp" alt="stamp" />

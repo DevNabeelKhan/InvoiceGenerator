@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { AlertService } from './alert.service';
-import { Invoice, Company, Currency, Project } from '../app/shared/models/invoice.model';
+import { Invoice, Company, Currency, Project, Warehouse } from '../app/shared/models/invoice.model';
 
 @Injectable({
   providedIn: 'root'
@@ -150,6 +150,33 @@ export class InvoiceApiService {
   async DeleteProjectDocument(Id: number): Promise<any> {
     try {
       return await this.httpService.getAsync<any>(`${this.controller}/DeleteProjectDocument`, { Id });
+    } catch (err: any) {
+      this.alert.Error(err.statusText);
+    }
+    return undefined;
+  }
+
+  async GetWarehouse(params: { Id?: number | null; SearchText?: string | null; IsActive?: boolean | null; PageNumber?: number; PageSize?: number; }): Promise<any> {
+    try {
+      return await this.httpService.getAsync<any>(`${this.controller}/GetWarehouse`, params);
+    } catch (err: any) {
+      this.alert.Error(err.statusText);
+    }
+    return undefined;
+  }
+
+  async InsertUpdateWarehouse(body: Warehouse): Promise<any> {
+    try {
+      return await this.httpService.post<any>(`${this.controller}/InsertUpdateWarehouse`, body);
+    } catch (err: any) {
+      this.alert.Error(err.statusText);
+    }
+    return undefined;
+  }
+
+  async DeleteWarehouse(Id: number): Promise<any> {
+    try {
+      return await this.httpService.getAsync<any>(`${this.controller}/DeleteWarehouse`, { Id });
     } catch (err: any) {
       this.alert.Error(err.statusText);
     }

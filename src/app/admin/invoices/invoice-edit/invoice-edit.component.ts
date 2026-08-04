@@ -11,7 +11,7 @@ import { CustomerApiService } from '../../../../services/customer-api.service';
 import { ProductApiService } from '../../../../services/product-api.service';
 import { ConfigurationApiService } from '../../../../services/configuration-api.service';
 
-import { Invoice, InvoiceProductLine, Company, Currency, Project } from '../../../shared/models/invoice.model';
+import { Invoice, InvoiceProductLine, Company, Currency, Project, Warehouse } from '../../../shared/models/invoice.model';
 import { Customer } from '../../../shared/models/customer.model';
 import { Product } from '../../../shared/models/product.model';
 import { ConfigurationItem, getConfigurationTypeBySlug } from '../../../shared/models/configuration.model';
@@ -22,6 +22,7 @@ import { ConfigurationModalComponent } from '../../configuration/configuration-m
 import { CompanyModalComponent } from '../../settings/company-settings/company-modal/company-modal.component';
 import { CurrencyModalComponent } from '../../settings/currencies/currency-modal/currency-modal.component';
 import { ProjectModalComponent } from './project-modal/project-modal.component';
+import { WarehouseModalComponent } from './warehouse-modal/warehouse-modal.component';
 
 @Component({
   selector: 'app-invoice-edit',
@@ -80,6 +81,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   currencies: Currency[] = [];
   companies: Company[] = [];
   projects: Project[] = [];
+  warehouses: Warehouse[] = [];
 
   selectedCompany: Company | null = null;
   selectedCustomer: Customer | null = null;
@@ -87,19 +89,37 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   showProjectDropdown = false;
   projectSearchText: string = '';
 
+  showWarehouseDropdown = false;
+  warehouseSearchText: string = '';
+
+  showCompanyDropdown = false;
+  companySearchText: string = '';
+
+  showCustomerDropdown = false;
+  customerSearchText: string = '';
+
   qrImageBase64: string | null = null;
 
   showFieldsMenu = false;
-  visibleFields: { purchaseOrder: boolean; reference: boolean; project: boolean } = {
-    purchaseOrder: false,
-    reference: false,
-    project: false
+  visibleFields: { purchaseOrder: boolean; reference: boolean; project: boolean; warehouse: boolean } = {
+    purchaseOrder: true,
+    reference: true,
+    project: true,
+    warehouse: true
   };
-  fieldToggles: { key: 'purchaseOrder' | 'reference' | 'project'; label: string }[] = [
+  fieldToggles: { key: 'purchaseOrder' | 'reference' | 'project' | 'warehouse'; label: string }[] = [
     { key: 'purchaseOrder', label: 'Purchase order' },
     { key: 'reference', label: 'Reference' },
-    { key: 'project', label: 'Project' }
+    { key: 'project', label: 'Project' },
+    { key: 'warehouse', label: 'Warehouse' }
   ];
+
+  openDescDropdownIndex: number | null = null;
+  descDropdownPos: { top: number; left: number; width: number } = { top: 0, left: 0, width: 0 };
+
+  openLineDropdown: { index: number; field: 'account' | 'costCenter' | 'revenueRecognition' } | null = null;
+  lineDropdownSearch: string = '';
+  lineDropdownPos: { top: number; left: number; width: number } = { top: 0, left: 0, width: 0 };
 
   showAdjustTotal = false;
   showDocMenu = false;
@@ -144,6 +164,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadCurrencies(),
       this.loadCompanies(),
       this.loadProjects(),
+      this.loadWarehouses(),
       this.loadCostCenters(),
       this.loadRevenueRecognitions()
     ]);
@@ -204,6 +225,11 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (res?.statusCode == 200 && res.data) this.projects = res.data;
   }
 
+  async loadWarehouses() {
+    const res: any = await this.api.GetWarehouse({ IsActive: true, PageSize: 1000 });
+    if (res?.statusCode == 200 && res.data) this.warehouses = res.data;
+  }
+
   async loadCompanies() {
     const res: any = await this.api.GetCompany(null);
     if (res?.statusCode == 200 && res.data) this.companies = res.data;
@@ -223,6 +249,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.invoice.PurchaseOrderNumber) this.visibleFields.purchaseOrder = true;
         if (this.invoice.Reference) this.visibleFields.reference = true;
         if (this.invoice.ProjectName) this.visibleFields.project = true;
+        if (this.invoice.WarehouseName) this.visibleFields.warehouse = true;
         if (this.invoice.GeneratedQRCode) {
           await this.regenerateQr();
         }
@@ -265,6 +292,18 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async openEditCustomer() {
+    if (!this.invoice.CustomerId) return;
+    const ref = this.dialog.open(CustomerModalComponent, {
+      data: this.invoice.CustomerId, width: '900px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadCustomers();
+      this.onCustomerChange();
+    }
+  }
+
   async openAddCurrency() {
     const ref = this.dialog.open(CurrencyModalComponent, {
       data: null, width: '520px', maxWidth: '95vw', disableClose: true
@@ -276,6 +315,62 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.invoice.CurrencyId = result;
         this.onCurrencyChange();
       }
+    }
+  }
+
+  get filteredCompanies(): Company[] {
+    const term = (this.companySearchText || '').trim().toLowerCase();
+    if (!term) return this.companies;
+    return this.companies.filter(c => (c.Title || '').toLowerCase().includes(term));
+  }
+
+  get filteredCustomers(): Customer[] {
+    const term = (this.customerSearchText || '').trim().toLowerCase();
+    if (!term) return this.customers;
+    return this.customers.filter(c => (c.CustomerName || '').toLowerCase().includes(term));
+  }
+
+  openCustomerDropdown() {
+    this.showCustomerDropdown = true;
+    this.customerSearchText = '';
+  }
+
+  closeCustomerDropdown() {
+    this.showCustomerDropdown = false;
+    this.customerSearchText = '';
+  }
+
+  selectCustomer(c: Customer) {
+    this.invoice.CustomerId = c.Id;
+    this.onCustomerChange();
+    this.closeCustomerDropdown();
+  }
+
+  openCompanyDropdown() {
+    this.showCompanyDropdown = true;
+    this.companySearchText = '';
+  }
+
+  closeCompanyDropdown() {
+    this.showCompanyDropdown = false;
+    this.companySearchText = '';
+  }
+
+  selectCompany(c: Company) {
+    this.invoice.CompanyId = c.Id;
+    this.onCompanyChange();
+    this.closeCompanyDropdown();
+  }
+
+  async editSelectedCompany() {
+    if (!this.invoice.CompanyId) return;
+    const ref = this.dialog.open(CompanyModalComponent, {
+      data: this.invoice.CompanyId, width: '700px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadCompanies();
+      this.onCompanyChange();
     }
   }
 
@@ -331,6 +426,61 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.loadProjects();
       const p = this.projects.find(pr => pr.Id === this.invoice.ProjectId);
       if (p) this.invoice.ProjectName = p.Title;
+    }
+  }
+
+  get filteredWarehouses(): Warehouse[] {
+    const term = (this.warehouseSearchText || '').trim().toLowerCase();
+    if (!term) return this.warehouses;
+    return this.warehouses.filter(w => (w.Name || '').toLowerCase().includes(term));
+  }
+
+  openWarehouseDropdown() {
+    this.showWarehouseDropdown = true;
+    this.warehouseSearchText = '';
+  }
+
+  closeWarehouseDropdown() {
+    this.showWarehouseDropdown = false;
+    this.warehouseSearchText = '';
+  }
+
+  selectWarehouse(w: Warehouse) {
+    this.invoice.WarehouseId = w.Id;
+    this.invoice.WarehouseName = w.Name;
+    this.closeWarehouseDropdown();
+  }
+
+  clearWarehouse() {
+    this.invoice.WarehouseId = null;
+    this.invoice.WarehouseName = null;
+  }
+
+  async openAddWarehouse() {
+    const ref = this.dialog.open(WarehouseModalComponent, {
+      data: null, width: '560px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadWarehouses();
+      if (typeof result === 'number') {
+        const w = this.warehouses.find(wh => wh.Id === result);
+        if (w) this.selectWarehouse(w);
+      }
+    }
+    this.closeWarehouseDropdown();
+  }
+
+  async editSelectedWarehouse() {
+    if (!this.invoice.WarehouseId) return;
+    const ref = this.dialog.open(WarehouseModalComponent, {
+      data: this.invoice.WarehouseId, width: '560px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadWarehouses();
+      const w = this.warehouses.find(wh => wh.Id === this.invoice.WarehouseId);
+      if (w) this.invoice.WarehouseName = w.Name;
     }
   }
 
@@ -488,6 +638,97 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.recalculateLine(line);
   }
 
+  filteredProductsForLine(line: InvoiceProductLine): Product[] {
+    const term = (line.Description || '').trim().toLowerCase();
+    if (!term) return this.products;
+    return this.products.filter(p => (p.Title || '').toLowerCase().includes(term));
+  }
+
+  openDescDropdown(index: number, event?: FocusEvent) {
+    this.openDescDropdownIndex = index;
+    const el = event?.target as HTMLElement | undefined;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      this.descDropdownPos = { top: rect.bottom + 4, left: rect.left, width: rect.width };
+    }
+  }
+
+  closeDescDropdown() {
+    this.openDescDropdownIndex = null;
+  }
+
+  selectProductForLine(line: InvoiceProductLine, product: Product) {
+    line.ProductId = product.Id;
+    this.onProductSelect(line);
+    this.closeDescDropdown();
+  }
+
+  isLineDropdownOpen(index: number, field: 'account' | 'costCenter' | 'revenueRecognition'): boolean {
+    return this.openLineDropdown?.index === index && this.openLineDropdown?.field === field;
+  }
+
+  openLineFieldDropdown(index: number, field: 'account' | 'costCenter' | 'revenueRecognition', event: MouseEvent | FocusEvent) {
+    this.openLineDropdown = { index, field };
+    this.lineDropdownSearch = '';
+    const el = (event.currentTarget || event.target) as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    this.lineDropdownPos = { top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 220) };
+  }
+
+  closeLineFieldDropdown() {
+    this.openLineDropdown = null;
+    this.lineDropdownSearch = '';
+  }
+
+  get openLineDropdownCurrentLine(): InvoiceProductLine | null {
+    return this.openLineDropdown ? this.lines[this.openLineDropdown.index] : null;
+  }
+
+  get lineDropdownCreateLabel(): string {
+    const field = this.openLineDropdown?.field;
+    if (field === 'account') return '+ Create account';
+    if (field === 'costCenter') return '+ Create cost center';
+    if (field === 'revenueRecognition') return '+ Create revenue recognition';
+    return '+ Create';
+  }
+
+  get filteredLineOptions(): ConfigurationItem[] {
+    const field = this.openLineDropdown?.field;
+    const source = field === 'account' ? this.accounts : field === 'costCenter' ? this.costCenters : this.revenueRecognitions;
+    const term = (this.lineDropdownSearch || '').trim().toLowerCase();
+    if (!term) return source;
+    return source.filter(o => (o.Title || '').toLowerCase().includes(term));
+  }
+
+  selectLineOption(line: InvoiceProductLine, option: ConfigurationItem) {
+    const field = this.openLineDropdown?.field;
+    if (field === 'account') {
+      line.AccountId = option.Id;
+      this.recalculateLine(line);
+    } else if (field === 'costCenter') {
+      line.CostCenterId = option.Id;
+    } else if (field === 'revenueRecognition') {
+      line.RevenueRecognitionId = option.Id;
+    }
+    this.closeLineFieldDropdown();
+  }
+
+  async createLineOption(line: InvoiceProductLine) {
+    const field = this.openLineDropdown?.field;
+    if (field === 'account') await this.openAddAccount(line);
+    else if (field === 'costCenter') await this.openAddCostCenter(line);
+    else if (field === 'revenueRecognition') await this.openAddRevenueRecognition(line);
+    this.closeLineFieldDropdown();
+  }
+
+  getCostCenterTitle(id: number | null | undefined): string {
+    return this.costCenters.find(c => c.Id === id)?.Title || '';
+  }
+
+  getRevenueRecognitionTitle(id: number | null | undefined): string {
+    return this.revenueRecognitions.find(r => r.Id === id)?.Title || '';
+  }
+
   onPricesIncludeTaxChange() {
     this.lines.forEach(l => this.recalculateLine(l, false));
     this.recalculateAll();
@@ -615,9 +856,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
         const newId = res.data?.Id || this.invoiceId;
         if (newId) {
           this.invoiceId = newId;
+          this.router.navigate(['/invoices/edit', newId], { replaceUrl: true });
           await this.loadInvoice(newId);
+          await this.regenerateQr();
         }
-        this.router.navigate(['/invoices']);
       } else {
         this.toastr.error(res?.message || 'Something went wrong');
       }
@@ -628,9 +870,15 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async regenerateQr() {
     if (!this.invoiceId) return;
-    const res: any = await this.api.GenerateQr(this.invoiceId);
-    if (res?.statusCode == 200 && res.data) {
-      this.qrImageBase64 = res.data.qrImageBase64 || res.data.QrImageBase64;
+    try {
+      const res: any = await this.api.GenerateQr(this.invoiceId);
+      if (res?.statusCode == 200 && res.data) {
+        this.qrImageBase64 = res.data.qrImageBase64 || res.data.QrImageBase64;
+      } else {
+        this.toastr.error(res?.message || 'Failed to generate QR code');
+      }
+    } catch (err: any) {
+      this.toastr.error('Failed to generate QR code');
     }
   }
 
@@ -666,7 +914,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.paperResizeObserver = new ResizeObserver(() => this.updatePreviewScale());
       this.paperResizeObserver.observe(this.previewPaperEl.nativeElement);
     }
-    this.updatePreviewScale();
+    // Defer the initial calculation: mutating a template-bound value synchronously
+    // inside ngAfterViewInit changes it after this view has already been checked
+    // in the same cycle, triggering NG0100 (ExpressionChangedAfterItHasBeenCheckedError).
+    setTimeout(() => this.updatePreviewScale());
   }
 
   ngOnDestroy() {
@@ -683,6 +934,13 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const availableWidth = panelEl.clientWidth - 48; // account for panel padding
     const scale = Math.min(1, Math.max(0.3, availableWidth / this.previewIntrinsicWidth));
     const scaledHeight = paperEl.offsetHeight * scale;
+
+    // Skip no-op updates: without this guard, tiny sub-pixel differences can
+    // keep re-triggering the ResizeObservers in a feedback loop, causing the
+    // preview to visibly jitter/"vibrate".
+    if (Math.abs(scale - this.previewScale) < 0.001 && Math.abs(scaledHeight - this.previewScaledHeight) < 1) {
+      return;
+    }
 
     // ResizeObserver callbacks run outside Angular's zone, so re-enter it
     // to make sure the scale/height bindings actually update the view.
@@ -735,6 +993,21 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.showProjectDropdown && !target.closest('.project-combo')) {
       this.closeProjectDropdown();
+    }
+    if (this.showWarehouseDropdown && !target.closest('.warehouse-combo')) {
+      this.closeWarehouseDropdown();
+    }
+    if (this.showCompanyDropdown && !target.closest('.company-combo')) {
+      this.closeCompanyDropdown();
+    }
+    if (this.showCustomerDropdown && !target.closest('.customer-combo')) {
+      this.closeCustomerDropdown();
+    }
+    if (this.openDescDropdownIndex !== null && !target.closest('.desc-cell')) {
+      this.closeDescDropdown();
+    }
+    if (this.openLineDropdown && !target.closest('.line-select-combo') && !target.closest('.line-dropdown-panel')) {
+      this.closeLineFieldDropdown();
     }
   }
 }

@@ -1,0 +1,72 @@
+<div class="wf-modal">
+    <div class="wf-modal-header">
+        <button type="button" class="wf-close-btn" (click)="cancel()" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="wf-modal-header-text">
+            <h2 class="wf-modal-title">{{ selectedId ? 'Edit warehouse' : 'Create warehouse' }}</h2>
+        </div>
+        <div class="wf-modal-header-actions">
+            <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        </div>
+    </div>
+
+    <mat-dialog-content class="wf-modal-content">
+        <form #form="ngForm">
+            <div class="wf-field">
+                <label>Code <span class="text-danger">*</span></label>
+                <input type="text" name="Code" [(ngModel)]="warehouseModel.Code" class="form-control"
+                    placeholder="Empty" required autofocus>
+            </div>
+
+            <div class="wf-field">
+                <label>Name <span class="text-danger">*</span></label>
+                <input type="text" name="Name" [(ngModel)]="warehouseModel.Name" class="form-control"
+                    placeholder="Empty" required>
+            </div>
+
+            <div class="wf-field">
+                <label>Phone</label>
+                <input type="text" name="Phone" [(ngModel)]="warehouseModel.Phone" class="form-control"
+                    placeholder="Empty">
+            </div>
+
+            <div class="wf-address-section-header" (click)="toggleAddress()">
+                <span>Address <span class="wf-optional">Optional</span></span>
+                <i class="fa-solid fa-chevron-up" [class.rotated]="!showAddress"></i>
+            </div>
+
+            <div class="wf-address-fields" *ngIf="showAddress">
+                <div class="wf-field">
+                    <label>Street address</label>
+                    <input type="text" name="StreetAddress" [(ngModel)]="warehouseModel.StreetAddress"
+                        class="form-control" placeholder="Empty">
+                </div>
+
+                <div class="wf-field">
+                    <label>Building number</label>
+                    <input type="text" name="BuildingNumber" [(ngModel)]="warehouseModel.BuildingNumber"
+                        class="form-control" placeholder="Empty">
+                </div>
+
+                <div class="wf-field">
+                    <label>District</label>
+                    <input type="text" name="District" [(ngModel)]="warehouseModel.District" class="form-control"
+                        placeholder="Empty">
+                </div>
+
+                <div class="wf-field">
+                    <label>City</label>
+                    <input type="text" name="City" [(ngModel)]="warehouseModel.City" class="form-control"
+                        placeholder="Empty">
+                </div>
+
+                <div class="wf-field">
+                    <label>Postal code</label>
+                    <input type="text" name="PostalCode" [(ngModel)]="warehouseModel.PostalCode"
+                        class="form-control" placeholder="Empty">
+                </div>
+            </div>
+        </form>
+    </mat-dialog-content>
+</div>
