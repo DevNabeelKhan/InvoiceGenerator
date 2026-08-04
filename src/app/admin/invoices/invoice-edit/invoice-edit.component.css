@@ -574,9 +574,14 @@ textarea.form-control {
 
 .invoice-lines-table {
     width: 100%;
-    min-width: 900px;
+    min-width: 1180px;
     border-collapse: collapse;
     font-size: 12.5px;
+}
+
+/* Keeps the description readable instead of letting the fixed-width columns squeeze it. */
+.col-description {
+    min-width: 240px;
 }
 
 .invoice-lines-table thead th {

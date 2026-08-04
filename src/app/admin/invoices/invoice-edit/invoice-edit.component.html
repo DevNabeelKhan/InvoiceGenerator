@@ -217,7 +217,7 @@
           <thead>
             <tr>
               <th style="width: 26px;"></th>
-              <th>Description *</th>
+              <th class="col-description">Description *</th>
               <th style="width: 70px;">Qty *</th>
               <th style="width: 90px;">Price</th>
               <th style="width: 70px;" *ngIf="visibleLineFields.taxRate">Tax rate</th>
@@ -232,7 +232,7 @@
           <tbody>
             <tr *ngFor="let line of lines; let i = index;">
               <td class="drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
-              <td>
+              <td class="col-description">
                 <app-searchable-select [options]="productOptions" [freeText]="true" [text]="line.Description"
                   [value]="line.ProductId" placeholder="Description or search items…" createLabel="Create item"
                   emptyText="No items found" (textChange)="onLineDescriptionChange(line, $event)"
