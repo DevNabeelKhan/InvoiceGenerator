@@ -93,25 +93,6 @@
     text-decoration: underline;
 }
 
-.quick-add-icon {
-    flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    color: #4f46e5;
-    font-size: 11px;
-    text-decoration: none;
-}
-
-.quick-add-icon:hover {
-    background: #eef2ff;
-    border-color: #4f46e5;
-}
-
 .form-row.two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -135,69 +116,162 @@
 .lines-toolbar {
     display: flex;
     justify-content: flex-end;
-    margin: 20px 0 6px;
+    align-items: center;
+    margin: 24px 0 8px;
 }
 
 .lines-hint {
-    font-size: 11px;
+    font-size: 12px;
     color: #9ca3af;
 }
 
 .invoice-lines-table-wrap {
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden;
 }
 
 .invoice-lines-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 12.5px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
 }
 
 .invoice-lines-table thead th {
-    background: #f9fafb;
     color: #6b7280;
     font-weight: 600;
-    padding: 8px;
+    font-size: 12.5px;
+    padding: 10px 6px;
     text-align: left;
-    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    border-bottom: 1px solid #eef1f5;
+}
+
+.invoice-lines-table thead th:first-child {
+    padding-left: 10px;
+}
+
+.invoice-lines-table thead th:last-child {
+    padding-right: 10px;
+}
+
+.invoice-lines-table thead .req {
+    color: #9ca3af;
 }
 
 .invoice-lines-table tbody td {
-    padding: 8px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 8px 6px;
     vertical-align: top;
+    border-bottom: 1px solid #f6f8fa;
 }
+
+.invoice-lines-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.invoice-lines-table tbody td:first-child {
+    padding-left: 10px;
+}
+
+.invoice-lines-table tbody td:last-child {
+    padding-right: 10px;
+}
+
+.col-handle { width: 22px; }
+.col-qty { width: 74px; }
+.col-price { width: 88px; }
+.col-tax { width: 82px; }
+.col-account { width: 168px; }
+.col-discount { width: 92px; }
+.col-total { width: 96px; }
+.col-actions { width: 62px; }
 
 .drag-handle-cell {
-    color: #d1d5db;
+    color: #d5dae1;
     text-align: center;
     cursor: grab;
+    padding-top: 15px !important;
 }
 
-.form-select-sm, .form-control-sm {
+.line-input {
+    width: 100%;
+    min-height: 34px;
+    background: #fff;
+    border: 1px solid #d7dce3;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #111827;
+}
+
+.line-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.line-input::placeholder {
+    color: #9ca3af;
+}
+
+.line-input-suffix {
+    position: relative;
+}
+
+.line-input-suffix .line-input {
+    padding-right: 24px;
+}
+
+.line-input-suffix .suffix {
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    transform: translateY(-50%);
     font-size: 12px;
-    padding: 5px 8px;
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.line-total {
+    padding-top: 15px !important;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.col-actions {
+    padding-top: 12px !important;
+    text-align: right;
+    white-space: nowrap;
 }
 
 .lines-footer {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
-.btn-add-link {
-    background: none;
-    border: none;
-    color: #4f46e5;
-    font-weight: 600;
-    font-size: 13px;
+.btn-line-action {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
+    background: #fff;
+    border: 1px solid #d7dce3;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
     cursor: pointer;
+}
+
+.btn-line-action:hover {
+    background: #f9fafb;
+    border-color: #c3cad4;
 }
 
 .totals-section {
@@ -384,6 +458,17 @@
 .preview-stamp {
     max-width: 60px;
     margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+    .invoice-lines-table thead th,
+    .invoice-lines-table tbody td {
+        padding: 6px 4px;
+    }
+
+    .col-account { width: 130px; }
+    .col-qty, .col-price, .col-tax, .col-discount { width: 68px; }
+    .col-total { width: 80px; }
 }
 
 @media (max-width: 1200px) {

@@ -16,6 +16,8 @@ import { Customer } from '../../../shared/models/customer.model';
 import { Product } from '../../../shared/models/product.model';
 import { ConfigurationItem, getConfigurationTypeBySlug } from '../../../shared/models/configuration.model';
 
+import { SearchableSelectComponent, SearchableOption } from '../../../shared/searchable-select/searchable-select.component';
+
 import { CustomerModalComponent } from '../../customers/customer-modal/customer-modal.component';
 import { ProductModalComponent } from '../../products/product-modal/product-modal.component';
 import { ConfigurationModalComponent } from '../../configuration/configuration-modal/configuration-modal.component';
@@ -25,7 +27,7 @@ import { CurrencyModalComponent } from '../../settings/currencies/currency-modal
 @Component({
   selector: 'app-invoice-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule],
+  imports: [CommonModule, FormsModule, MatDialogModule, SearchableSelectComponent],
   templateUrl: './invoice-edit.component.html',
   styleUrl: './invoice-edit.component.css'
 })
@@ -57,6 +59,9 @@ export class InvoiceEditComponent implements OnInit {
   accounts: ConfigurationItem[] = [];
   currencies: Currency[] = [];
   companies: Company[] = [];
+
+  productOptions: SearchableOption[] = [];
+  accountOptions: SearchableOption[] = [];
 
   selectedCompany: Company | null = null;
   selectedCustomer: Customer | null = null;
@@ -114,12 +119,21 @@ export class InvoiceEditComponent implements OnInit {
 
   async loadProducts() {
     const res: any = await this.productApi.GetProduct({ IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.products = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.products = res.data;
+      this.productOptions = this.products.map(p => ({
+        value: p.Id,
+        label: p.Title || p.ServiceDescription || ''
+      }));
+    }
   }
 
   async loadAccounts() {
     const res: any = await this.configApi.GetConfiguration('AccountType', { IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.accounts = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.accounts = res.data;
+      this.accountOptions = this.accounts.map(a => ({ value: a.Id, label: a.Title || '' }));
+    }
   }
 
   async loadCurrencies() {
@@ -315,6 +329,21 @@ export class InvoiceEditComponent implements OnInit {
       line.AccountId = product.RevenueAccountID || null;
       line.TaxRate = product.RevenueTaxRatePercentage ?? line.TaxRate ?? 15;
     }
+    this.recalculateLine(line);
+  }
+
+  onLineDescriptionChange(line: InvoiceProductLine, description: string) {
+    line.Description = description;
+    this.recalculateLine(line);
+  }
+
+  onLineProductChange(line: InvoiceProductLine, productId: number | null) {
+    line.ProductId = productId;
+    this.onProductSelect(line);
+  }
+
+  onLineAccountChange(line: InvoiceProductLine, accountId: number | null) {
+    line.AccountId = accountId;
     this.recalculateLine(line);
   }
 

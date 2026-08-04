@@ -1,0 +1,186 @@
+.ss-root {
+    position: relative;
+    width: 100%;
+}
+
+.ss-field {
+    width: 100%;
+    min-height: 34px;
+    background: #fff;
+    border: 1px solid #d7dce3;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #111827;
+    font-family: inherit;
+}
+
+.ss-field:focus,
+.ss-open .ss-field {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.ss-textarea {
+    display: block;
+    resize: none;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.ss-textarea::placeholder {
+    color: #9ca3af;
+}
+
+.ss-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ss-trigger.ss-align-end .ss-selected {
+    text-align: right;
+}
+
+.ss-disabled .ss-field {
+    background: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.ss-selected {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ss-placeholder {
+    color: #9ca3af;
+}
+
+.ss-field-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.ss-clear,
+.ss-caret {
+    color: #9ca3af;
+    font-size: 10px;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.ss-clear:hover {
+    color: #ef4444;
+}
+
+/* ---------------- Dropdown panel ---------------- */
+
+.ss-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    min-width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
+    z-index: 40;
+    overflow: hidden;
+}
+
+.ss-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.ss-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: #111827;
+    background: transparent;
+}
+
+.ss-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.ss-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.ss-option-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ss-option.ss-highlighted {
+    background: #eef2ff;
+    color: #3730a3;
+}
+
+.ss-option.ss-selected-option {
+    font-weight: 600;
+    color: #4f46e5;
+}
+
+.ss-option-check {
+    font-size: 10px;
+    color: #4f46e5;
+}
+
+.ss-empty {
+    padding: 10px;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.ss-create {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4f46e5;
+    text-decoration: none;
+    background: #fff;
+}
+
+.ss-create.ss-highlighted,
+.ss-create:hover {
+    background: #eef2ff;
+}

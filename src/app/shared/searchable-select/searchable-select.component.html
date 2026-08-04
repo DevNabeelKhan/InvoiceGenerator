@@ -1,0 +1,43 @@
+<div class="ss-root" [class.ss-open]="isOpen" [class.ss-disabled]="disabled">
+
+  <textarea *ngIf="freeText" #textInput class="ss-field ss-textarea" rows="1" [value]="text || ''"
+    [placeholder]="placeholder" [disabled]="disabled" role="combobox" [attr.aria-expanded]="isOpen"
+    (input)="onTextInput($event)" (focus)="open()" (click)="open()" (keydown)="onKeydown($event)"></textarea>
+
+  <button *ngIf="!freeText" type="button" class="ss-field ss-trigger" [class.ss-align-end]="align === 'end'"
+    [disabled]="disabled" role="combobox" [attr.aria-expanded]="isOpen" (click)="toggle()"
+    (keydown)="onKeydown($event)">
+    <span class="ss-selected" [class.ss-placeholder]="!selectedLabel">{{ selectedLabel || placeholder }}</span>
+    <span class="ss-field-actions">
+      <a *ngIf="clearable && hasValue" href="javascript:;" class="ss-clear" title="Clear"
+        (click)="clear($event)"><i class="fa-solid fa-xmark"></i></a>
+      <i class="ss-caret fa-solid fa-chevron-down"></i>
+    </span>
+  </button>
+
+  <div class="ss-panel" *ngIf="isOpen" role="listbox">
+    <div class="ss-search" *ngIf="!freeText">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input #searchInput type="text" class="ss-search-input" [placeholder]="searchPlaceholder"
+        (input)="onQueryInput($event)" (keydown)="onKeydown($event)" />
+    </div>
+
+    <ul class="ss-list" #list>
+      <li *ngFor="let option of filteredOptions; let i = index" class="ss-option" role="option"
+        [class.ss-highlighted]="i === highlightedIndex" [class.ss-selected-option]="!freeText && option.value === value"
+        [attr.aria-selected]="option.value === value" (mouseenter)="highlightedIndex = i"
+        (mousedown)="selectOption(option, $event)">
+        <span class="ss-option-label">{{ option.label }}</span>
+        <i class="fa-solid fa-check ss-option-check" *ngIf="!freeText && option.value === value"></i>
+      </li>
+    </ul>
+
+    <div class="ss-empty" *ngIf="!filteredOptions.length">{{ emptyText }}</div>
+
+    <a *ngIf="createLabel" href="javascript:;" class="ss-create"
+      [class.ss-highlighted]="highlightedIndex === createIndex" (mouseenter)="highlightedIndex = createIndex"
+      (mousedown)="onCreate($event)">
+      <i class="fa-solid fa-plus"></i> {{ createLabel }}
+    </a>
+  </div>
+</div>

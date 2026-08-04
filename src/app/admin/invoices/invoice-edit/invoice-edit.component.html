@@ -97,61 +97,62 @@
         <span class="lines-hint">Prices are exc. tax</span>
       </div>
 
-      <div class="table-responsive invoice-lines-table-wrap">
+      <div class="invoice-lines-table-wrap">
         <table class="invoice-lines-table">
           <thead>
             <tr>
-              <th style="width: 26px;"></th>
-              <th>Description *</th>
-              <th style="width: 70px;">Qty *</th>
-              <th style="width: 90px;">Price</th>
-              <th style="width: 70px;">VAT %</th>
-              <th style="width: 160px;">Account *</th>
-              <th style="width: 100px;" class="text-end">Total</th>
-              <th style="width: 70px;"></th>
+              <th class="col-handle"></th>
+              <th class="col-description">Description <span class="req">*</span></th>
+              <th class="col-qty">Qty <span class="req">*</span></th>
+              <th class="col-price">Price</th>
+              <th class="col-tax">Tax rate</th>
+              <th class="col-account">Account <span class="req">*</span></th>
+              <th class="col-discount">Discount</th>
+              <th class="col-total text-end">Total</th>
+              <th class="col-actions"></th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let line of lines; let i = index;">
-              <td class="drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
-              <td>
-                <div class="d-flex gap-1 mb-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.ProductId" (ngModelChange)="onProductSelect(line)">
-                    <option [ngValue]="null">Select product… (optional)</option>
-                    <option *ngFor="let p of products" [ngValue]="p.Id">{{ p.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new product" (click)="openAddProduct(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
-                </div>
-                <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="line.Description"
-                  placeholder="Line description" (ngModelChange)="recalculateLine(line)"></textarea>
+              <td class="col-handle drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
+              <td class="col-description">
+                <app-searchable-select [options]="productOptions" [freeText]="true" [text]="line.Description"
+                  [value]="line.ProductId" placeholder="Description" createLabel="Create item"
+                  emptyText="No items found" (textChange)="onLineDescriptionChange(line, $event)"
+                  (valueChange)="onLineProductChange(line, $event)" (create)="openAddProduct(line)">
+                </app-searchable-select>
               </td>
-              <td>
-                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
-                  [(ngModel)]="line.Quantity" (ngModelChange)="recalculateLine(line)" />
+              <td class="col-qty">
+                <input type="number" min="0" step="0.01" class="line-input text-end" [(ngModel)]="line.Quantity"
+                  (ngModelChange)="recalculateLine(line)" />
               </td>
-              <td>
-                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
-                  [(ngModel)]="line.Price" (ngModelChange)="recalculateLine(line)" />
+              <td class="col-price">
+                <input type="number" min="0" step="0.01" class="line-input text-end" [(ngModel)]="line.Price"
+                  (ngModelChange)="recalculateLine(line)" />
               </td>
-              <td>
-                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
-                  [(ngModel)]="line.TaxRate" (ngModelChange)="recalculateLine(line)" />
-              </td>
-              <td>
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.AccountId" (ngModelChange)="recalculateLine(line)">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new account" (click)="openAddAccount(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
+              <td class="col-tax">
+                <div class="line-input-suffix">
+                  <input type="number" min="0" step="0.01" class="line-input" [(ngModel)]="line.TaxRate"
+                    (ngModelChange)="recalculateLine(line)" />
+                  <span class="suffix">%</span>
                 </div>
               </td>
-              <td class="text-end fw-600">{{ line.LineTotal | number:'1.2-2' }}</td>
-              <td class="text-center">
+              <td class="col-account">
+                <app-searchable-select [options]="accountOptions" [value]="line.AccountId" [clearable]="true"
+                  placeholder="Select" searchPlaceholder="Search accounts..." createLabel="Create account"
+                  emptyText="No accounts found" (valueChange)="onLineAccountChange(line, $event)"
+                  (create)="openAddAccount(line)">
+                </app-searchable-select>
+              </td>
+              <td class="col-discount">
+                <div class="line-input-suffix">
+                  <input type="number" min="0" step="0.01" class="line-input" placeholder="Optional"
+                    [(ngModel)]="line.DiscountPercentage" (ngModelChange)="recalculateLine(line)" />
+                  <span class="suffix">%</span>
+                </div>
+              </td>
+              <td class="col-total text-end line-total">{{ line.LineTotal | number:'1.2-2' }}</td>
+              <td class="col-actions">
                 <a href="javascript:;" class="row-action-btn" title="Duplicate" (click)="duplicateLine(i)">
                   <i class="fa-solid fa-copy"></i>
                 </a>
@@ -165,8 +166,8 @@
       </div>
 
       <div class="lines-footer">
-        <button class="btn-add-link" (click)="addLine()"><i class="fa-solid fa-plus"></i> Add line</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="clearLines()"><i class="fa-solid fa-broom"></i> Clear lines</button>
+        <button class="btn-line-action" (click)="addLine()"><i class="fa-solid fa-plus"></i> Add line</button>
+        <button class="btn-line-action" (click)="clearLines()"><i class="fa-regular fa-trash-can"></i> Clear line</button>
       </div>
 
       <!-- Totals -->
