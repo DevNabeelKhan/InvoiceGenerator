@@ -15,10 +15,10 @@
     </span>
   </button>
 
-  <div class="ss-panel" *ngIf="isOpen" role="listbox">
+  <div class="ss-panel" #panel *ngIf="isOpen" [ngStyle]="panelStyle" role="listbox">
     <div class="ss-search" *ngIf="!freeText">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input #searchInput type="text" class="ss-search-input" [placeholder]="searchPlaceholder"
+      <input #searchInput type="text" class="ss-search-input" [placeholder]="searchPlaceholder" [value]="query"
         (input)="onQueryInput($event)" (keydown)="onKeydown($event)" />
     </div>
 

@@ -233,20 +233,11 @@
             <tr *ngFor="let line of lines; let i = index;">
               <td class="drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
               <td>
-                <div class="desc-cell">
-                  <input type="text" class="form-control form-control-sm desc-input" [(ngModel)]="line.Description"
-                    placeholder="Description or search items…" (ngModelChange)="recalculateLine(line)" />
-                  <div class="desc-picker" title="Pick an item">
-                    <i class="fa-solid fa-chevron-down"></i>
-                    <select class="desc-picker-native" [(ngModel)]="line.ProductId" (ngModelChange)="onProductSelect(line)">
-                      <option [ngValue]="null">Select item…</option>
-                      <option *ngFor="let p of products" [ngValue]="p.Id">{{ p.Title }}</option>
-                    </select>
-                  </div>
-                  <a href="javascript:;" class="quick-add-icon desc-add" title="Add new item" (click)="openAddProduct(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
-                </div>
+                <app-searchable-select [options]="productOptions" [freeText]="true" [text]="line.Description"
+                  [value]="line.ProductId" placeholder="Description or search items…" createLabel="Create item"
+                  emptyText="No items found" (textChange)="onLineDescriptionChange(line, $event)"
+                  (valueChange)="onLineProductChange(line, $event)" (create)="openAddProduct(line)">
+                </app-searchable-select>
                 <div class="field-error-pill" *ngIf="attemptedSave && !line.Description">Description is required</div>
               </td>
               <td>
@@ -262,15 +253,11 @@
                   [(ngModel)]="line.TaxRate" (ngModelChange)="recalculateLine(line)" />
               </td>
               <td *ngIf="visibleLineFields.account">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.AccountId" (ngModelChange)="recalculateLine(line)">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new account" (click)="openAddAccount(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
-                </div>
+                <app-searchable-select [options]="accountOptions" [value]="line.AccountId" [clearable]="true"
+                  placeholder="Select…" searchPlaceholder="Search accounts…" createLabel="Create account"
+                  emptyText="No accounts found" (valueChange)="onLineAccountChange(line, $event)"
+                  (create)="openAddAccount(line)">
+                </app-searchable-select>
                 <div class="field-error-pill" *ngIf="attemptedSave && !line.AccountId">Account is required</div>
               </td>
               <td *ngIf="visibleLineFields.discount">
@@ -278,26 +265,18 @@
                   [(ngModel)]="line.DiscountPercentage" (ngModelChange)="recalculateLine(line)" placeholder="Optional %" />
               </td>
               <td *ngIf="visibleLineFields.revenueRecognition">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.RevenueRecognitionId">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let r of revenueRecognitions" [ngValue]="r.Id">{{ r.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new revenue recognition" (click)="openAddRevenueRecognition(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
-                </div>
+                <app-searchable-select [options]="revenueRecognitionOptions" [value]="line.RevenueRecognitionId"
+                  [clearable]="true" placeholder="Select…" searchPlaceholder="Search…"
+                  createLabel="Create revenue recognition" emptyText="No options found"
+                  (valueChange)="line.RevenueRecognitionId = $event" (create)="openAddRevenueRecognition(line)">
+                </app-searchable-select>
               </td>
               <td *ngIf="visibleLineFields.costCenter">
-                <div class="d-flex gap-1">
-                  <select class="form-select form-select-sm" [(ngModel)]="line.CostCenterId">
-                    <option [ngValue]="null">Select…</option>
-                    <option *ngFor="let cc of costCenters" [ngValue]="cc.Id">{{ cc.Title }}</option>
-                  </select>
-                  <a href="javascript:;" class="quick-add-icon" title="Add new cost center" (click)="openAddCostCenter(line)">
-                    <i class="fa-solid fa-plus"></i>
-                  </a>
-                </div>
+                <app-searchable-select [options]="costCenterOptions" [value]="line.CostCenterId" [clearable]="true"
+                  placeholder="Select…" searchPlaceholder="Search cost centers…" createLabel="Create cost center"
+                  emptyText="No cost centers found" (valueChange)="line.CostCenterId = $event"
+                  (create)="openAddCostCenter(line)">
+                </app-searchable-select>
               </td>
               <td class="text-end fw-600" *ngIf="visibleLineFields.total">{{ line.LineTotal | number:'1.2-2' }}</td>
               <td class="text-center">

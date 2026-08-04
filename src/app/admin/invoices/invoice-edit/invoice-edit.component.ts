@@ -17,6 +17,8 @@ import { Product } from '../../../shared/models/product.model';
 import { ConfigurationItem, getConfigurationTypeBySlug } from '../../../shared/models/configuration.model';
 
 import { CustomerModalComponent } from '../../customers/customer-modal/customer-modal.component';
+import { SearchableSelectComponent, SearchableOption } from '../../../shared/searchable-select/searchable-select.component';
+
 import { ProductModalComponent } from '../../products/product-modal/product-modal.component';
 import { ConfigurationModalComponent } from '../../configuration/configuration-modal/configuration-modal.component';
 import { CompanyModalComponent } from '../../settings/company-settings/company-modal/company-modal.component';
@@ -26,7 +28,7 @@ import { ProjectModalComponent } from './project-modal/project-modal.component';
 @Component({
   selector: 'app-invoice-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule],
+  imports: [CommonModule, FormsModule, MatDialogModule, SearchableSelectComponent],
   templateUrl: './invoice-edit.component.html',
   styleUrl: './invoice-edit.component.css'
 })
@@ -77,6 +79,11 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   accounts: ConfigurationItem[] = [];
   costCenters: ConfigurationItem[] = [];
   revenueRecognitions: ConfigurationItem[] = [];
+
+  productOptions: SearchableOption[] = [];
+  accountOptions: SearchableOption[] = [];
+  costCenterOptions: SearchableOption[] = [];
+  revenueRecognitionOptions: SearchableOption[] = [];
   currencies: Currency[] = [];
   companies: Company[] = [];
   projects: Project[] = [];
@@ -176,22 +183,41 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async loadProducts() {
     const res: any = await this.productApi.GetProduct({ IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.products = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.products = res.data;
+      this.productOptions = this.products.map(p => ({
+        value: p.Id,
+        label: p.Title || p.ServiceDescription || ''
+      }));
+    }
   }
 
   async loadAccounts() {
     const res: any = await this.configApi.GetConfiguration('AccountType', { IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.accounts = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.accounts = res.data;
+      this.accountOptions = this.toOptions(this.accounts);
+    }
   }
 
   async loadCostCenters() {
     const res: any = await this.configApi.GetConfiguration('CostCenter', { IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.costCenters = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.costCenters = res.data;
+      this.costCenterOptions = this.toOptions(this.costCenters);
+    }
   }
 
   async loadRevenueRecognitions() {
     const res: any = await this.configApi.GetConfiguration('RevenueRecognitionType', { IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) this.revenueRecognitions = res.data;
+    if (res?.statusCode == 200 && res.data) {
+      this.revenueRecognitions = res.data;
+      this.revenueRecognitionOptions = this.toOptions(this.revenueRecognitions);
+    }
+  }
+
+  private toOptions(items: ConfigurationItem[]): SearchableOption[] {
+    return items.map(i => ({ value: i.Id, label: i.Title || '' }));
   }
 
   async loadCurrencies() {
@@ -491,6 +517,21 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   onPricesIncludeTaxChange() {
     this.lines.forEach(l => this.recalculateLine(l, false));
     this.recalculateAll();
+  }
+
+  onLineDescriptionChange(line: InvoiceProductLine, description: string) {
+    line.Description = description;
+    this.recalculateLine(line);
+  }
+
+  onLineProductChange(line: InvoiceProductLine, productId: number | null) {
+    line.ProductId = productId;
+    this.onProductSelect(line);
+  }
+
+  onLineAccountChange(line: InvoiceProductLine, accountId: number | null) {
+    line.AccountId = accountId;
+    this.recalculateLine(line);
   }
 
   recalculateLine(line: InvoiceProductLine, recalcAll: boolean = true) {

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewChecked,
   AfterViewInit,
   Component,
   ElementRef,
@@ -7,6 +8,7 @@ import {
   HostListener,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   SimpleChanges,
   ViewChild
@@ -24,7 +26,7 @@ export interface SearchableOption {
   templateUrl: './searchable-select.component.html',
   styleUrl: './searchable-select.component.css'
 })
-export class SearchableSelectComponent implements OnChanges, AfterViewInit {
+export class SearchableSelectComponent implements OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
 
   /** Options rendered in the dropdown, in display order. */
   @Input() options: SearchableOption[] = [];
@@ -50,12 +52,17 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
   @ViewChild('textInput') textInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
   @ViewChild('list') list?: ElementRef<HTMLElement>;
+  @ViewChild('panel') panelEl?: ElementRef<HTMLElement>;
 
   isOpen = false;
   highlightedIndex = -1;
   filteredOptions: SearchableOption[] = [];
+  query = '';
+  /** The panel is fixed-positioned so it is never clipped by the scrolling table wrapper. */
+  panelStyle: { [key: string]: string } = {};
 
-  private query = '';
+  private pendingSearchFocus = false;
+  private readonly repositionBound = () => this.positionPanel();
 
   constructor(private host: ElementRef<HTMLElement>) { }
 
@@ -70,6 +77,17 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit() {
     this.autoGrow();
+  }
+
+  ngAfterViewChecked() {
+    if (this.pendingSearchFocus && this.searchInput) {
+      this.pendingSearchFocus = false;
+      this.searchInput.nativeElement.focus();
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopTrackingPosition();
   }
 
   get selectedLabel(): string {
@@ -94,15 +112,20 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
     this.highlightedIndex = this.freeText
       ? -1
       : this.filteredOptions.findIndex(o => o.value === this.value);
-    if (!this.freeText) {
-      setTimeout(() => this.searchInput?.nativeElement.focus());
-    }
+    this.pendingSearchFocus = !this.freeText;
+    this.positionPanel();
+    // Re-measure once the panel is rendered so it can flip above the field when needed.
+    setTimeout(() => this.positionPanel());
+    window.addEventListener('scroll', this.repositionBound, true);
+    window.addEventListener('resize', this.repositionBound);
   }
 
   close() {
     this.isOpen = false;
     this.highlightedIndex = -1;
     this.query = '';
+    this.pendingSearchFocus = false;
+    this.stopTrackingPosition();
   }
 
   toggle() {
@@ -126,6 +149,7 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
     }
     this.applyFilter();
     this.highlightedIndex = -1;
+    this.positionPanel();
   }
 
   selectOption(option: SearchableOption, event?: Event) {
@@ -153,6 +177,24 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
   }
 
   onKeydown(event: KeyboardEvent) {
+    if (!this.freeText && this.isTypedCharacter(event)) {
+      // The trigger keeps focus in some browsers, so route typing to the search box
+      // instead of dropping the keystroke.
+      if (!this.isOpen) this.open();
+      this.query += event.key;
+      this.applyFilter();
+      this.highlightedIndex = this.filteredOptions.length ? 0 : this.createIndex;
+      this.pendingSearchFocus = true;
+      event.preventDefault();
+      return;
+    }
+    if (!this.freeText && this.isOpen && event.key === 'Backspace' && this.query) {
+      this.query = this.query.slice(0, -1);
+      this.applyFilter();
+      this.pendingSearchFocus = true;
+      event.preventDefault();
+      return;
+    }
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -219,6 +261,29 @@ export class SearchableSelectComponent implements OnChanges, AfterViewInit {
     if (!listEl) return;
     const option = listEl.children.item(this.highlightedIndex) as HTMLElement | null;
     option?.scrollIntoView({ block: 'nearest' });
+  }
+
+  private isTypedCharacter(event: KeyboardEvent): boolean {
+    return event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey;
+  }
+
+  private positionPanel() {
+    if (!this.isOpen) return;
+    const field = this.host.nativeElement.querySelector('.ss-field') as HTMLElement | null;
+    if (!field) return;
+    const rect = field.getBoundingClientRect();
+    const panelHeight = this.panelEl?.nativeElement.offsetHeight || 260;
+    const openUpwards = rect.bottom + panelHeight + 8 > window.innerHeight && rect.top > panelHeight;
+    this.panelStyle = {
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      top: openUpwards ? `${rect.top - panelHeight - 4}px` : `${rect.bottom + 4}px`
+    };
+  }
+
+  private stopTrackingPosition() {
+    window.removeEventListener('scroll', this.repositionBound, true);
+    window.removeEventListener('resize', this.repositionBound);
   }
 
   private applyFilter() {
