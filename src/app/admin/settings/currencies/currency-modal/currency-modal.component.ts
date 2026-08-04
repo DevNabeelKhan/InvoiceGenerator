@@ -17,7 +17,7 @@ import { Currency } from '../../../../shared/models/invoice.model';
 export class CurrencyModalComponent {
   currencyModel: Currency = {
     Code: '',
-    Name: '',
+    Title: '',
     Symbol: '',
     ExchangeRate: 1,
     IsActive: true
@@ -48,7 +48,7 @@ export class CurrencyModalComponent {
   }
 
   isValid(): boolean {
-    return !!(this.currencyModel.Code && this.currencyModel.Name);
+    return !!(this.currencyModel.Code && this.currencyModel.Title);
   }
 
   async onSubmit() {

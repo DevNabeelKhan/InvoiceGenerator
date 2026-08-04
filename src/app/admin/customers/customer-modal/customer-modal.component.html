@@ -1,168 +1,181 @@
-<h2 mat-dialog-title>{{ selectedId ? 'Edit Customer' : 'Add Customer' }}</h2>
-<mat-dialog-content>
-    <div class="row">
-        <div class="col-lg-12">
-            <form #form="ngForm">
-                <div class="box">
-                    <div class="box-body">
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-6 col-md-6 mb-2">
-                                <label class="mb-1">Customer Name <span class="text-danger">*</span></label>
-                                <div class="form-group">
-                                    <input type="text" name="CustomerName" [(ngModel)]="customerModel.CustomerName"
-                                        class="form-control" placeholder="Enter Customer Name" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 mb-2">
-                                <label class="mb-1">Tax Registration Number</label>
-                                <div class="form-group">
-                                    <input type="text" name="TaxRegistrationNumber"
-                                        [(ngModel)]="customerModel.TaxRegistrationNumber" class="form-control"
-                                        placeholder="Enter Tax Registration Number">
-                                </div>
-                            </div>
+<div class="wf-modal">
+    <div class="wf-modal-header">
+        <button type="button" class="wf-close-btn" (click)="cancel()" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="wf-modal-header-text">
+            <h2 class="wf-modal-title">{{ selectedId ? 'Edit customer' : 'Add customer' }}</h2>
+            <p class="wf-modal-subtitle">A person or organization you do business with</p>
+        </div>
+        <div class="wf-modal-header-actions">
+            <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+            <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
+        </div>
+    </div>
+
+    <mat-dialog-content class="wf-modal-content">
+        <form #form="ngForm">
+
+            <!-- Business Details -->
+            <div class="wf-section">
+                <button type="button" class="wf-section-header" (click)="sections.business = !sections.business">
+                    <span class="wf-section-title">Business details</span>
+                    <span class="wf-section-tag">Required</span>
+                    <i class="fa-solid fa-chevron-up wf-section-chevron" [class.collapsed]="!sections.business"></i>
+                </button>
+                <div class="wf-section-body" *ngIf="sections.business">
+                    <div class="wf-grid wf-grid-2">
+                        <div class="wf-field">
+                            <label>Customer name <span class="text-danger">*</span></label>
+                            <input type="text" name="CustomerName" [(ngModel)]="customerModel.CustomerName"
+                                class="form-control" placeholder="Required" required>
                         </div>
-
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">City</label>
-                                <div class="form-group">
-                                    <input type="text" name="City" [(ngModel)]="customerModel.City"
-                                        class="form-control" placeholder="Enter City">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">District</label>
-                                <div class="form-group">
-                                    <input type="text" name="District" [(ngModel)]="customerModel.District"
-                                        class="form-control" placeholder="Enter District">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">Postal Code</label>
-                                <div class="form-group">
-                                    <input type="text" name="PostalCode" [(ngModel)]="customerModel.PostalCode"
-                                        class="form-control" placeholder="Enter Postal Code">
-                                </div>
-                            </div>
+                        <div class="wf-field">
+                            <label>Tax registration number</label>
+                            <input type="text" name="TaxRegistrationNumber"
+                                [(ngModel)]="customerModel.TaxRegistrationNumber" class="form-control"
+                                placeholder="Optional">
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-6 col-md-6 mb-2">
-                                <label class="mb-1">Street Address</label>
-                                <div class="form-group">
-                                    <input type="text" name="StreetAddress" [(ngModel)]="customerModel.StreetAddress"
-                                        class="form-control" placeholder="Enter Street Address">
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 mb-2">
-                                <label class="mb-1">Building Number</label>
-                                <div class="form-group">
-                                    <input type="text" name="BuildingNumber"
-                                        [(ngModel)]="customerModel.BuildingNumber" class="form-control"
-                                        placeholder="Enter Building Number">
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 mb-2">
-                                <label class="mb-1">Additional Number</label>
-                                <div class="form-group">
-                                    <input type="text" name="AddressAdditionalNumber"
-                                        [(ngModel)]="customerModel.AddressAdditionalNumber" class="form-control"
-                                        placeholder="Enter Additional Number">
-                                </div>
-                            </div>
+            <!-- Address -->
+            <div class="wf-section">
+                <button type="button" class="wf-section-header" (click)="sections.address = !sections.address">
+                    <span class="wf-section-title">Address</span>
+                    <span class="wf-section-tag">Optional</span>
+                    <i class="fa-solid fa-chevron-up wf-section-chevron" [class.collapsed]="!sections.address"></i>
+                </button>
+                <div class="wf-section-body" *ngIf="sections.address">
+                    <div class="wf-grid wf-grid-3">
+                        <div class="wf-field">
+                            <label>City</label>
+                            <input type="text" name="City" [(ngModel)]="customerModel.City"
+                                class="form-control" placeholder="Optional">
                         </div>
-
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">Invoicing Email</label>
-                                <div class="form-group">
-                                    <input type="email" name="InvoicingEmail"
-                                        [(ngModel)]="customerModel.InvoicingEmail" class="form-control"
-                                        placeholder="Enter Invoicing Email">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">Invoicing Phone</label>
-                                <div class="form-group">
-                                    <input type="text" name="InvoicingPhone"
-                                        [(ngModel)]="customerModel.InvoicingPhone" class="form-control"
-                                        placeholder="Enter Invoicing Phone">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">Invoicing Code</label>
-                                <div class="form-group">
-                                    <input type="text" name="InvoicingCode" [(ngModel)]="customerModel.InvoicingCode"
-                                        class="form-control" placeholder="Enter Invoicing Code">
-                                </div>
-                            </div>
+                        <div class="wf-field">
+                            <label>District</label>
+                            <input type="text" name="District" [(ngModel)]="customerModel.District"
+                                class="form-control" placeholder="Optional">
                         </div>
-
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-4 col-md-6 mb-2">
-                                <label class="mb-1">Contact Type Number</label>
-                                <div class="form-group">
-                                    <input type="text" name="ContactTypeNumber"
-                                        [(ngModel)]="customerModel.ContactTypeNumber" class="form-control"
-                                        placeholder="Enter Contact Type Number">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6 mb-2" *ngIf="selectedId">
-                                <label class="mb-1">Status</label>
-                                <div class="form-group">
-                                    <select class="form-select" name="IsActive" [(ngModel)]="customerModel.IsActive">
-                                        <option [ngValue]="true">Active</option>
-                                        <option [ngValue]="false">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="wf-field">
+                            <label>Postal code</label>
+                            <input type="text" name="PostalCode" [(ngModel)]="customerModel.PostalCode"
+                                class="form-control" placeholder="Optional">
                         </div>
+                    </div>
+                    <div class="wf-grid wf-grid-3">
+                        <div class="wf-field wf-field-span2">
+                            <label>Street address</label>
+                            <input type="text" name="StreetAddress" [(ngModel)]="customerModel.StreetAddress"
+                                class="form-control" placeholder="Optional">
+                        </div>
+                        <div class="wf-field">
+                            <label>Building number</label>
+                            <input type="text" name="BuildingNumber"
+                                [(ngModel)]="customerModel.BuildingNumber" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="wf-grid wf-grid-3">
+                        <div class="wf-field">
+                            <label>Address additional number</label>
+                            <input type="text" name="AddressAdditionalNumber"
+                                [(ngModel)]="customerModel.AddressAdditionalNumber" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="row mt-2 px-2">
-                            <div class="col-lg-12 mb-2">
-                                <label class="mb-1">Beneficiaries</label>
-                                <div class="d-flex gap-2">
-                                    <select class="form-select" [(ngModel)]="beneficiaryToAdd" name="beneficiaryToAdd"
-                                        (change)="addBeneficiaryFromDropdown()">
-                                        <option [ngValue]="null">Select existing beneficiary…</option>
-                                        <option *ngFor="let b of availableBeneficiaries" [ngValue]="b.Id">{{ b.BeneficiaryName }}</option>
-                                    </select>
-                                    <button type="button" class="btn-add-link flex-shrink-0" (click)="openAddBeneficiary()">
-                                        <i class="fa-solid fa-plus"></i> Add Beneficiary
-                                    </button>
-                                </div>
+            <!-- Invoicing information -->
+            <div class="wf-section">
+                <button type="button" class="wf-section-header" (click)="sections.invoicing = !sections.invoicing">
+                    <span class="wf-section-title">Invoicing information</span>
+                    <span class="wf-section-tag">Optional</span>
+                    <i class="fa-solid fa-chevron-up wf-section-chevron" [class.collapsed]="!sections.invoicing"></i>
+                </button>
+                <div class="wf-section-body" *ngIf="sections.invoicing">
+                    <div class="wf-grid wf-grid-3">
+                        <div class="wf-field">
+                            <label>Code</label>
+                            <input type="text" name="InvoicingCode" [(ngModel)]="customerModel.InvoicingCode"
+                                class="form-control" placeholder="Optional">
+                        </div>
+                        <div class="wf-field">
+                            <label>Email</label>
+                            <input type="email" name="InvoicingEmail"
+                                [(ngModel)]="customerModel.InvoicingEmail" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                        <div class="wf-field">
+                            <label>Phone</label>
+                            <input type="text" name="InvoicingPhone"
+                                [(ngModel)]="customerModel.InvoicingPhone" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="wf-grid wf-grid-3">
+                        <div class="wf-field">
+                            <label>Contact type number</label>
+                            <input type="text" name="ContactTypeNumber"
+                                [(ngModel)]="customerModel.ContactTypeNumber" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                        <div class="wf-field" *ngIf="selectedId">
+                            <label>Status</label>
+                            <select class="form-select" name="IsActive" [(ngModel)]="customerModel.IsActive">
+                                <option [ngValue]="true">Active</option>
+                                <option [ngValue]="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                                <div class="linked-list mt-2">
-                                    <div class="linked-empty" *ngIf="!selectedBeneficiaries.length">
-                                        No beneficiaries linked yet.
-                                    </div>
-                                    <div class="linked-card" *ngFor="let b of selectedBeneficiaries">
-                                        <div class="linked-card-info">
-                                            <div class="linked-card-title">{{ b.BeneficiaryName }}</div>
-                                            <div class="linked-card-sub">{{ b.IBAN }}<span *ngIf="b.BankName"> · {{ b.BankName }}</span></div>
-                                        </div>
-                                        <div class="linked-card-actions">
-                                            <button type="button" class="icon-btn" (click)="openEditBeneficiary(b.Id)" title="Edit">
-                                                <i class="fa-solid fa-pen"></i>
-                                            </button>
-                                            <button type="button" class="icon-btn" (click)="unlinkBeneficiary(b.Id)" title="Unlink">
-                                                <i class="fa-solid fa-link-slash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+            <!-- Beneficiaries -->
+            <div class="wf-section">
+                <button type="button" class="wf-section-header" (click)="sections.beneficiaries = !sections.beneficiaries">
+                    <span class="wf-section-title">Beneficiaries</span>
+                    <span class="wf-section-tag">Optional</span>
+                    <i class="fa-solid fa-chevron-up wf-section-chevron" [class.collapsed]="!sections.beneficiaries"></i>
+                </button>
+                <div class="wf-section-body" *ngIf="sections.beneficiaries">
+                    <p class="wf-section-hint">If you've connected a bank account, you can pay this customer directly by adding a beneficiary.</p>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" [(ngModel)]="beneficiaryToAdd" name="beneficiaryToAdd"
+                            (change)="addBeneficiaryFromDropdown()">
+                            <option [ngValue]="null">Select existing beneficiary…</option>
+                            <option *ngFor="let b of availableBeneficiaries" [ngValue]="b.Id">{{ b.BeneficiaryName }}</option>
+                        </select>
+                        <button type="button" class="btn-add-link flex-shrink-0" (click)="openAddBeneficiary()">
+                            <i class="fa-solid fa-plus"></i> Add Beneficiary
+                        </button>
+                    </div>
+
+                    <div class="linked-list mt-2">
+                        <div class="linked-empty" *ngIf="!selectedBeneficiaries.length">
+                            No beneficiaries linked yet.
+                        </div>
+                        <div class="linked-card" *ngFor="let b of selectedBeneficiaries">
+                            <div class="linked-card-info">
+                                <div class="linked-card-title">{{ b.BeneficiaryName }}</div>
+                                <div class="linked-card-sub">{{ b.IBAN }}<span *ngIf="b.BankName"> · {{ b.BankName }}</span></div>
+                            </div>
+                            <div class="linked-card-actions">
+                                <button type="button" class="icon-btn" (click)="openEditBeneficiary(b.Id)" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" class="icon-btn" (click)="unlinkBeneficiary(b.Id)" title="Unlink">
+                                    <i class="fa-solid fa-link-slash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <div class="div-right">
-        <button class="cmp-btn" [disabled]="isSaving" (click)="onSubmit()">{{ isSaving ? 'Saving...' : 'Save' }}</button>
-        <button class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
-    </div>
-</mat-dialog-actions>
+            </div>
+
+        </form>
+    </mat-dialog-content>
+</div>

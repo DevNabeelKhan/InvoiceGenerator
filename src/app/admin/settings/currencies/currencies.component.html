@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-lg-3 mb-2">
                         <label class="mb-1">Name *</label>
-                        <input type="text" class="form-control" [(ngModel)]="editModel.Name" placeholder="Saudi Riyal" />
+                        <input type="text" class="form-control" [(ngModel)]="editModel.Title" placeholder="Saudi Riyal" />
                     </div>
                     <div class="col-lg-2 mb-2">
                         <label class="mb-1">Symbol</label>
@@ -69,7 +69,7 @@
                         <tr *ngFor="let item of currencies; let i = index;">
                             <td>{{ i + 1 }}</td>
                             <td class="fw-600">{{ item.Code }}</td>
-                            <td>{{ item.Name }}</td>
+                            <td>{{ item.Title }}</td>
                             <td>{{ item.Symbol || '-' }}</td>
                             <td>{{ item.ExchangeRate }}</td>
                             <td>

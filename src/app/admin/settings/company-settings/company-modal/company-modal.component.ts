@@ -17,7 +17,7 @@ import { Company } from '../../../../shared/models/invoice.model';
 })
 export class CompanyModalComponent {
   companyModel: Company = {
-    Name: '',
+    Title: '',
     ArabicName: '',
     Address: '',
     VATNumber: '',
@@ -62,7 +62,7 @@ export class CompanyModalComponent {
     clearTimeout(this.nameTranslateTimer);
     if (this.arabicNameManuallyEdited) return;
     this.nameTranslateTimer = setTimeout(async () => {
-      const translated = await this.translationService.translateToArabic(this.companyModel.Name);
+      const translated = await this.translationService.translateToArabic(this.companyModel.Title);
       if (translated && !this.arabicNameManuallyEdited) {
         this.companyModel.ArabicName = translated;
       }
@@ -74,7 +74,7 @@ export class CompanyModalComponent {
   }
 
   isValid(): boolean {
-    return !!(this.companyModel.Name && this.companyModel.Name.trim().length > 0);
+    return !!(this.companyModel.Title && this.companyModel.Title.trim().length > 0);
   }
 
   async onSubmit() {

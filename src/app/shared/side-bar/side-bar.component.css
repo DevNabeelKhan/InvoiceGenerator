@@ -192,6 +192,10 @@
   font-size: 14px;
 }
 
+body.sidebar-closed .app-topbar {
+  left: 0;
+}
+
 .sidebar-backdrop {
   display: none;
 }

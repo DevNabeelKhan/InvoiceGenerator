@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -11,32 +11,49 @@ import { CustomerApiService } from '../../../../services/customer-api.service';
 import { ProductApiService } from '../../../../services/product-api.service';
 import { ConfigurationApiService } from '../../../../services/configuration-api.service';
 
-import { Invoice, InvoiceProductLine, Company, Currency } from '../../../shared/models/invoice.model';
+import { Invoice, InvoiceProductLine, Company, Currency, Project } from '../../../shared/models/invoice.model';
 import { Customer } from '../../../shared/models/customer.model';
 import { Product } from '../../../shared/models/product.model';
 import { ConfigurationItem, getConfigurationTypeBySlug } from '../../../shared/models/configuration.model';
-
-import { SearchableSelectComponent, SearchableOption } from '../../../shared/searchable-select/searchable-select.component';
 
 import { CustomerModalComponent } from '../../customers/customer-modal/customer-modal.component';
 import { ProductModalComponent } from '../../products/product-modal/product-modal.component';
 import { ConfigurationModalComponent } from '../../configuration/configuration-modal/configuration-modal.component';
 import { CompanyModalComponent } from '../../settings/company-settings/company-modal/company-modal.component';
 import { CurrencyModalComponent } from '../../settings/currencies/currency-modal/currency-modal.component';
+import { ProjectModalComponent } from './project-modal/project-modal.component';
 
 @Component({
   selector: 'app-invoice-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule, SearchableSelectComponent],
+  imports: [CommonModule, FormsModule, MatDialogModule],
   templateUrl: './invoice-edit.component.html',
   styleUrl: './invoice-edit.component.css'
 })
-export class InvoiceEditComponent implements OnInit {
+export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   invoiceId: number | null = null;
   isSaving: boolean = false;
   isLoading: boolean = false;
   showPreview: boolean = true;
+  attemptedSave: boolean = false;
+
+  previewPanelWidth: number = 540;
+  private readonly minPreviewWidth = 360;
+  private readonly maxPreviewWidth = 900;
+  private isResizing = false;
+  private resizeStartX = 0;
+  private resizeStartWidth = 0;
+  private onResizeMoveBound = (e: MouseEvent) => this.onResizeMove(e);
+  private onResizeEndBound = () => this.onResizeEnd();
+
+  @ViewChild('previewPanel') previewPanelEl?: ElementRef<HTMLDivElement>;
+  @ViewChild('previewPaper') previewPaperEl?: ElementRef<HTMLDivElement>;
+  readonly previewIntrinsicWidth = 480;
+  previewScale = 1;
+  previewScaledHeight = 0;
+  private panelResizeObserver?: ResizeObserver;
+  private paperResizeObserver?: ResizeObserver;
 
   invoice: Invoice = {
     InvoiceDate: this.toDateInput(new Date()),
@@ -49,6 +66,7 @@ export class InvoiceEditComponent implements OnInit {
     RoundOffAmount: 0,
     Status: 'Draft',
     Notes: '',
+    PricesIncludeTax: false,
     Products: []
   };
 
@@ -57,16 +75,51 @@ export class InvoiceEditComponent implements OnInit {
   customers: Customer[] = [];
   products: Product[] = [];
   accounts: ConfigurationItem[] = [];
+  costCenters: ConfigurationItem[] = [];
+  revenueRecognitions: ConfigurationItem[] = [];
   currencies: Currency[] = [];
   companies: Company[] = [];
-
-  productOptions: SearchableOption[] = [];
-  accountOptions: SearchableOption[] = [];
+  projects: Project[] = [];
 
   selectedCompany: Company | null = null;
   selectedCustomer: Customer | null = null;
 
+  showProjectDropdown = false;
+  projectSearchText: string = '';
+
   qrImageBase64: string | null = null;
+
+  showFieldsMenu = false;
+  visibleFields: { purchaseOrder: boolean; reference: boolean; project: boolean } = {
+    purchaseOrder: false,
+    reference: false,
+    project: false
+  };
+  fieldToggles: { key: 'purchaseOrder' | 'reference' | 'project'; label: string }[] = [
+    { key: 'purchaseOrder', label: 'Purchase order' },
+    { key: 'reference', label: 'Reference' },
+    { key: 'project', label: 'Project' }
+  ];
+
+  showAdjustTotal = false;
+  showDocMenu = false;
+  showLineFieldsMenu = false;
+  visibleLineFields: { taxRate: boolean; account: boolean; discount: boolean; revenueRecognition: boolean; costCenter: boolean; total: boolean } = {
+    taxRate: true,
+    account: true,
+    discount: true,
+    revenueRecognition: true,
+    costCenter: true,
+    total: true
+  };
+  lineFieldToggles: { key: 'taxRate' | 'account' | 'discount' | 'revenueRecognition' | 'costCenter' | 'total'; label: string }[] = [
+    { key: 'taxRate', label: 'Tax rate' },
+    { key: 'account', label: 'Account' },
+    { key: 'discount', label: 'Discount' },
+    { key: 'revenueRecognition', label: 'Revenue recognition' },
+    { key: 'costCenter', label: 'Cost center' },
+    { key: 'total', label: 'Total' }
+  ];
 
   constructor(
     private api: InvoiceApiService,
@@ -76,7 +129,8 @@ export class InvoiceEditComponent implements OnInit {
     private toastr: ToastrService,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ngZone: NgZone
   ) { }
 
   async ngOnInit() {
@@ -88,7 +142,10 @@ export class InvoiceEditComponent implements OnInit {
       this.loadProducts(),
       this.loadAccounts(),
       this.loadCurrencies(),
-      this.loadCompanies()
+      this.loadCompanies(),
+      this.loadProjects(),
+      this.loadCostCenters(),
+      this.loadRevenueRecognitions()
     ]);
 
     if (this.invoiceId) {
@@ -119,26 +176,32 @@ export class InvoiceEditComponent implements OnInit {
 
   async loadProducts() {
     const res: any = await this.productApi.GetProduct({ IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) {
-      this.products = res.data;
-      this.productOptions = this.products.map(p => ({
-        value: p.Id,
-        label: p.Title || p.ServiceDescription || ''
-      }));
-    }
+    if (res?.statusCode == 200 && res.data) this.products = res.data;
   }
 
   async loadAccounts() {
     const res: any = await this.configApi.GetConfiguration('AccountType', { IsActive: true, PageSize: 1000 });
-    if (res?.statusCode == 200 && res.data) {
-      this.accounts = res.data;
-      this.accountOptions = this.accounts.map(a => ({ value: a.Id, label: a.Title || '' }));
-    }
+    if (res?.statusCode == 200 && res.data) this.accounts = res.data;
+  }
+
+  async loadCostCenters() {
+    const res: any = await this.configApi.GetConfiguration('CostCenter', { IsActive: true, PageSize: 1000 });
+    if (res?.statusCode == 200 && res.data) this.costCenters = res.data;
+  }
+
+  async loadRevenueRecognitions() {
+    const res: any = await this.configApi.GetConfiguration('RevenueRecognitionType', { IsActive: true, PageSize: 1000 });
+    if (res?.statusCode == 200 && res.data) this.revenueRecognitions = res.data;
   }
 
   async loadCurrencies() {
     const res: any = await this.api.GetCurrency(null);
     if (res?.statusCode == 200 && res.data) this.currencies = res.data;
+  }
+
+  async loadProjects() {
+    const res: any = await this.api.GetProject({ IsActive: true, PageSize: 1000 });
+    if (res?.statusCode == 200 && res.data) this.projects = res.data;
   }
 
   async loadCompanies() {
@@ -157,6 +220,9 @@ export class InvoiceEditComponent implements OnInit {
         this.lines = (this.invoice.Products || []).map(p => ({ ...p }));
         this.onCompanyChange();
         this.onCustomerChange();
+        if (this.invoice.PurchaseOrderNumber) this.visibleFields.purchaseOrder = true;
+        if (this.invoice.Reference) this.visibleFields.reference = true;
+        if (this.invoice.ProjectName) this.visibleFields.project = true;
         if (this.invoice.GeneratedQRCode) {
           await this.regenerateQr();
         }
@@ -213,6 +279,61 @@ export class InvoiceEditComponent implements OnInit {
     }
   }
 
+  get filteredProjects(): Project[] {
+    const term = (this.projectSearchText || '').trim().toLowerCase();
+    if (!term) return this.projects;
+    return this.projects.filter(p => (p.Title || '').toLowerCase().includes(term));
+  }
+
+  openProjectDropdown() {
+    this.showProjectDropdown = true;
+    this.projectSearchText = '';
+  }
+
+  closeProjectDropdown() {
+    this.showProjectDropdown = false;
+    this.projectSearchText = '';
+  }
+
+  selectProject(p: Project) {
+    this.invoice.ProjectId = p.Id;
+    this.invoice.ProjectName = p.Title;
+    this.closeProjectDropdown();
+  }
+
+  clearProject() {
+    this.invoice.ProjectId = null;
+    this.invoice.ProjectName = null;
+  }
+
+  async openAddProject() {
+    const ref = this.dialog.open(ProjectModalComponent, {
+      data: null, width: '560px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadProjects();
+      if (typeof result === 'number') {
+        const p = this.projects.find(pr => pr.Id === result);
+        if (p) this.selectProject(p);
+      }
+    }
+    this.closeProjectDropdown();
+  }
+
+  async editSelectedProject() {
+    if (!this.invoice.ProjectId) return;
+    const ref = this.dialog.open(ProjectModalComponent, {
+      data: this.invoice.ProjectId, width: '560px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadProjects();
+      const p = this.projects.find(pr => pr.Id === this.invoice.ProjectId);
+      if (p) this.invoice.ProjectName = p.Title;
+    }
+  }
+
   async openAddProduct(line: InvoiceProductLine) {
     const ref = this.dialog.open(ProductModalComponent, {
       data: null, width: '900px', maxWidth: '95vw', disableClose: true
@@ -243,21 +364,52 @@ export class InvoiceEditComponent implements OnInit {
     }
   }
 
+  async openAddCostCenter(line: InvoiceProductLine) {
+    const typeInfo = getConfigurationTypeBySlug('cost-center');
+    if (!typeInfo) return;
+    const ref = this.dialog.open(ConfigurationModalComponent, {
+      data: { typeInfo }, width: '480px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadCostCenters();
+      if (typeof result === 'number') {
+        line.CostCenterId = result;
+      }
+    }
+  }
+
+  async openAddRevenueRecognition(line: InvoiceProductLine) {
+    const typeInfo = getConfigurationTypeBySlug('revenue-recognition');
+    if (!typeInfo) return;
+    const ref = this.dialog.open(ConfigurationModalComponent, {
+      data: { typeInfo }, width: '480px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      await this.loadRevenueRecognitions();
+      if (typeof result === 'number') {
+        line.RevenueRecognitionId = result;
+      }
+    }
+  }
+
   onCompanyChange() {
     this.selectedCompany = this.companies.find(c => c.Id === this.invoice.CompanyId) || null;
     if (this.selectedCompany) {
-      this.invoice.CompanyName = this.selectedCompany.Name;
+      this.invoice.CompanyName = this.selectedCompany.Title;
       this.invoice.CompanyArabicName = this.selectedCompany.ArabicName;
       this.invoice.CompanyAddress = this.selectedCompany.Address;
       this.invoice.CompanyArabicAddress = this.selectedCompany.ArabicAddress;
       this.invoice.CompanyVATNumber = this.selectedCompany.VATNumber;
-      this.invoice.LogoPath = this.selectedCompany.LogoPath;
+      this.invoice.LogoPath = this.selectedCompany.LogoPath || this.selectedCompany.LogoUrl;
       this.invoice.StampPath = this.selectedCompany.StampPath;
       this.invoice.CompanyBankName = this.selectedCompany.BankName;
       this.invoice.BankAccountNumber = this.selectedCompany.BankAccountNumber;
       this.invoice.IBAN = this.selectedCompany.IBAN;
       this.invoice.SwiftCode = this.selectedCompany.SwiftCode;
       this.invoice.AccountCurrency = this.selectedCompany.AccountCurrency;
+      this.invoice.BeneficiaryName = this.selectedCompany.BeneficiaryName;
     }
   }
 
@@ -321,6 +473,10 @@ export class InvoiceEditComponent implements OnInit {
     this.addLine();
   }
 
+  hasLineDiscounts(): boolean {
+    return this.lines.some(l => (l.DiscountAmount || 0) > 0 || (l.DiscountPercentage || 0) > 0);
+  }
+
   onProductSelect(line: InvoiceProductLine) {
     const product = this.products.find(p => p.Id === line.ProductId);
     if (product) {
@@ -332,22 +488,12 @@ export class InvoiceEditComponent implements OnInit {
     this.recalculateLine(line);
   }
 
-  onLineDescriptionChange(line: InvoiceProductLine, description: string) {
-    line.Description = description;
-    this.recalculateLine(line);
+  onPricesIncludeTaxChange() {
+    this.lines.forEach(l => this.recalculateLine(l, false));
+    this.recalculateAll();
   }
 
-  onLineProductChange(line: InvoiceProductLine, productId: number | null) {
-    line.ProductId = productId;
-    this.onProductSelect(line);
-  }
-
-  onLineAccountChange(line: InvoiceProductLine, accountId: number | null) {
-    line.AccountId = accountId;
-    this.recalculateLine(line);
-  }
-
-  recalculateLine(line: InvoiceProductLine) {
+  recalculateLine(line: InvoiceProductLine, recalcAll: boolean = true) {
     const qty = line.Quantity || 0;
     const price = line.Price || 0;
     const lineAmount = qty * price;
@@ -358,15 +504,25 @@ export class InvoiceEditComponent implements OnInit {
       line.DiscountAmount = discountAmt;
     }
 
-    const taxable = Math.max(0, lineAmount - discountAmt);
-    const vat = Math.round((taxable * (line.TaxRate || 0) / 100) * 100) / 100;
-    const total = taxable + vat;
+    const amountAfterDiscount = Math.max(0, lineAmount - discountAmt);
+    const rate = line.TaxRate || 0;
+    let taxable: number, vat: number, total: number;
+
+    if (this.invoice.PricesIncludeTax) {
+      taxable = rate > 0 ? Math.round((amountAfterDiscount / (1 + rate / 100)) * 100) / 100 : amountAfterDiscount;
+      vat = Math.round((amountAfterDiscount - taxable) * 100) / 100;
+      total = amountAfterDiscount;
+    } else {
+      taxable = amountAfterDiscount;
+      vat = Math.round((taxable * rate / 100) * 100) / 100;
+      total = taxable + vat;
+    }
 
     line.TaxableAmount = taxable;
     line.VATAmount = vat;
     line.LineTotal = total;
 
-    this.recalculateAll();
+    if (recalcAll) this.recalculateAll();
   }
 
   recalculateAll() {
@@ -439,6 +595,7 @@ export class InvoiceEditComponent implements OnInit {
   // ---------------- Save / Actions ----------------
 
   async onSave(status: 'Draft' | 'Approved' = 'Draft') {
+    this.attemptedSave = true;
     if (!this.isValid()) return;
 
     this.isSaving = true;
@@ -497,7 +654,87 @@ export class InvoiceEditComponent implements OnInit {
     this.showPreview = !this.showPreview;
   }
 
+  ngAfterViewInit() {
+    // Observe the panel's rendered width to compute the scale-to-fit factor,
+    // and observe the paper's natural (unscaled) height so the surrounding
+    // layout reserves exactly the right amount of space.
+    if (this.previewPanelEl) {
+      this.panelResizeObserver = new ResizeObserver(() => this.updatePreviewScale());
+      this.panelResizeObserver.observe(this.previewPanelEl.nativeElement);
+    }
+    if (this.previewPaperEl) {
+      this.paperResizeObserver = new ResizeObserver(() => this.updatePreviewScale());
+      this.paperResizeObserver.observe(this.previewPaperEl.nativeElement);
+    }
+    this.updatePreviewScale();
+  }
+
+  ngOnDestroy() {
+    this.panelResizeObserver?.disconnect();
+    this.paperResizeObserver?.disconnect();
+    this.onResizeEnd();
+  }
+
+  private updatePreviewScale() {
+    const panelEl = this.previewPanelEl?.nativeElement;
+    const paperEl = this.previewPaperEl?.nativeElement;
+    if (!panelEl || !paperEl) return;
+
+    const availableWidth = panelEl.clientWidth - 48; // account for panel padding
+    const scale = Math.min(1, Math.max(0.3, availableWidth / this.previewIntrinsicWidth));
+    const scaledHeight = paperEl.offsetHeight * scale;
+
+    // ResizeObserver callbacks run outside Angular's zone, so re-enter it
+    // to make sure the scale/height bindings actually update the view.
+    this.ngZone.run(() => {
+      this.previewScale = scale;
+      this.previewScaledHeight = scaledHeight;
+    });
+  }
+
+  onResizeStart(event: MouseEvent) {
+    this.isResizing = true;
+    this.resizeStartX = event.clientX;
+    this.resizeStartWidth = this.previewPanelWidth;
+    document.addEventListener('mousemove', this.onResizeMoveBound);
+    document.addEventListener('mouseup', this.onResizeEndBound);
+    event.preventDefault();
+  }
+
+  private onResizeMove(event: MouseEvent) {
+    if (!this.isResizing) return;
+    const delta = this.resizeStartX - event.clientX;
+    const newWidth = this.resizeStartWidth + delta;
+    this.previewPanelWidth = Math.min(this.maxPreviewWidth, Math.max(this.minPreviewWidth, newWidth));
+  }
+
+  private onResizeEnd() {
+    this.isResizing = false;
+    document.removeEventListener('mousemove', this.onResizeMoveBound);
+    document.removeEventListener('mouseup', this.onResizeEndBound);
+  }
+
   cancel() {
     this.router.navigate(['/invoices']);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.showFieldsMenu && !target.closest('.edit-fields-wrap')) {
+      this.showFieldsMenu = false;
+    }
+    if (this.showLineFieldsMenu && !target.closest('.line-edit-fields-wrap')) {
+      this.showLineFieldsMenu = false;
+    }
+    if (this.showAdjustTotal && !target.closest('.adjust-total-wrap')) {
+      this.showAdjustTotal = false;
+    }
+    if (this.showDocMenu && !target.closest('.doc-menu-wrap')) {
+      this.showDocMenu = false;
+    }
+    if (this.showProjectDropdown && !target.closest('.project-combo')) {
+      this.closeProjectDropdown();
+    }
   }
 }

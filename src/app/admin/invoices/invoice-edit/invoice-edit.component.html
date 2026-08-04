@@ -4,38 +4,84 @@
   <div class="invoice-topbar">
     <div class="d-flex align-items-center gap-2">
       <a href="javascript:;" (click)="cancel()" class="topbar-close"><i class="fa-solid fa-xmark"></i></a>
-      <span class="topbar-title">{{ invoiceId ? 'Edit invoice' : 'New invoice' }}</span>
+      <span class="topbar-title">{{ invoiceId ? 'Edit invoice' : 'Create invoice' }}</span>
       <span class="topbar-status" *ngIf="invoice.Status">{{ invoice.Status | uppercase }}</span>
     </div>
-    <div class="d-flex align-items-center gap-2">
-      <button class="btn btn-outline-secondary btn-sm" (click)="togglePreview()">
-        <i class="fa-solid fa-eye" [ngClass]="{'fa-eye-slash': !showPreview}"></i>
+    <div class="d-flex align-items-center gap-2 topbar-actions">
+      <button class="btn-topbar" (click)="togglePreview()">
+        <i class="fa-solid" [ngClass]="showPreview ? 'fa-eye-slash' : 'fa-eye'"></i>
         {{ showPreview ? 'Hide preview' : 'Show preview' }}
       </button>
-      <button class="btn btn-outline-secondary btn-sm" [disabled]="isSaving" (click)="onSave('Draft')">
-        Save draft
+      <button class="btn-topbar" [disabled]="isSaving" (click)="onSave('Draft')">
+        <i class="fa-regular fa-floppy-disk"></i> Save draft
       </button>
-      <button class="btn-primary-pill" [disabled]="isSaving" (click)="onSave('Approved')">
+      <button class="btn-topbar-primary" [disabled]="isSaving" (click)="onSave('Approved')">
         <i class="fa-solid fa-check"></i> {{ isSaving ? 'Saving...' : 'Finalize' }}
       </button>
+      <div class="doc-menu-wrap">
+        <button class="btn-topbar-icon" (click)="showDocMenu = !showDocMenu" title="More">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <div class="doc-menu" *ngIf="showDocMenu">
+          <button class="doc-menu-item" (click)="downloadPdf(); showDocMenu = false">
+            <i class="fa-solid fa-file-pdf"></i> Download PDF
+          </button>
+          <button class="doc-menu-item" (click)="downloadXml(); showDocMenu = false">
+            <i class="fa-solid fa-file-code"></i> Generate XML
+          </button>
+          <button class="doc-menu-item" (click)="regenerateQr(); showDocMenu = false">
+            <i class="fa-solid fa-qrcode"></i> Generate QR
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="invoice-edit-body" [class.no-preview]="!showPreview">
+  <div class="invoice-edit-body" [class.no-preview]="!showPreview"
+    [style.grid-template-columns]="showPreview ? ('1fr 6px ' + previewPanelWidth + 'px') : '1fr'">
 
     <!-- Left: Form -->
     <div class="invoice-form-panel">
-      <h2 class="invoice-heading">Invoice <span class="invoice-number" *ngIf="invoice.InvoiceNumber"># {{ invoice.InvoiceNumber }}</span></h2>
+      <div class="form-card">
+      <div class="d-flex justify-content-between align-items-start invoice-heading-row">
+        <h2 class="invoice-heading">Invoice <span class="invoice-number" *ngIf="invoice.InvoiceNumber"># {{ invoice.InvoiceNumber }}</span></h2>
+        <div class="edit-fields-wrap">
+          <button type="button" class="btn-edit-fields" (click)="showFieldsMenu = !showFieldsMenu">
+            <i class="fa-solid fa-sliders"></i> Edit Fields
+          </button>
+          <div class="edit-fields-menu" *ngIf="showFieldsMenu">
+            <div class="edit-fields-item" *ngFor="let f of fieldToggles">
+              <button type="button" class="toggle-switch" [class.on]="visibleFields[f.key]"
+                (click)="visibleFields[f.key] = !visibleFields[f.key]">
+                <span class="toggle-knob"></span>
+              </button>
+              <span>{{ f.label }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="form-row">
         <label class="d-flex justify-content-between">
           <span>Issuer *</span>
           <a href="javascript:;" class="quick-add-link" (click)="openAddCompany()">+ Add new</a>
         </label>
-        <select class="form-select" [(ngModel)]="invoice.CompanyId" (ngModelChange)="onCompanyChange()">
-          <option [ngValue]="null">Select company…</option>
-          <option *ngFor="let c of companies" [ngValue]="c.Id">{{ c.Name }}</option>
-        </select>
+        <div class="entity-select-box">
+          <div class="entity-select-avatar">
+            <img *ngIf="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" [src]="selectedCompany?.LogoUrl || selectedCompany?.LogoPath" alt="logo" />
+            <i *ngIf="!selectedCompany?.LogoUrl && !selectedCompany?.LogoPath" class="fa-solid fa-building"></i>
+          </div>
+          <div class="entity-select-text">
+            <div class="entity-select-title" *ngIf="selectedCompany">{{ selectedCompany.Title }}</div>
+            <div class="entity-select-title placeholder" *ngIf="!selectedCompany">Select company…</div>
+            <div class="entity-select-sub" *ngIf="selectedCompany?.Address">{{ selectedCompany?.Address }}</div>
+          </div>
+          <i class="fa-solid fa-chevron-down entity-select-chevron"></i>
+          <select class="entity-select-native" [(ngModel)]="invoice.CompanyId" (ngModelChange)="onCompanyChange()">
+            <option [ngValue]="null">Select company…</option>
+            <option *ngFor="let c of companies" [ngValue]="c.Id">{{ c.Title }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-row">
@@ -43,10 +89,26 @@
           <span>Customer *</span>
           <a href="javascript:;" class="quick-add-link" (click)="openAddCustomer()">+ Add new</a>
         </label>
-        <select class="form-select" [(ngModel)]="invoice.CustomerId" (ngModelChange)="onCustomerChange()">
-          <option [ngValue]="null">Select customer…</option>
-          <option *ngFor="let c of customers" [ngValue]="c.Id">{{ c.CustomerName }}</option>
-        </select>
+        <div class="entity-select-box">
+          <div class="entity-select-avatar round">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="entity-select-text">
+            <div class="entity-select-title" *ngIf="selectedCustomer">{{ selectedCustomer.CustomerName }}</div>
+            <div class="entity-select-title placeholder" *ngIf="!selectedCustomer">Select customer…</div>
+            <div class="entity-select-sub" *ngIf="selectedCustomer?.TaxRegistrationNumber">VAT Number {{ selectedCustomer?.TaxRegistrationNumber }}</div>
+          </div>
+          <a href="javascript:;" class="entity-select-clear" *ngIf="selectedCustomer" title="Clear"
+            (click)="invoice.CustomerId = null; onCustomerChange(); $event.stopPropagation()">
+            <i class="fa-solid fa-xmark"></i>
+          </a>
+          <i class="fa-solid fa-chevron-down entity-select-chevron" *ngIf="!selectedCustomer"></i>
+          <select class="entity-select-native" [(ngModel)]="invoice.CustomerId" (ngModelChange)="onCustomerChange()">
+            <option [ngValue]="null">Select customer…</option>
+            <option *ngFor="let c of customers" [ngValue]="c.Id">{{ c.CustomerName }}</option>
+          </select>
+        </div>
+        <div class="field-error-pill" *ngIf="attemptedSave && !invoice.CustomerId">Choose a contact</div>
       </div>
 
       <div class="form-row two-col">
@@ -60,19 +122,48 @@
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="form-row" *ngIf="visibleFields.purchaseOrder">
         <label>Purchase order</label>
         <input type="text" class="form-control" [(ngModel)]="invoice.PurchaseOrderNumber" placeholder="Enter PO number(s)" />
       </div>
 
-      <div class="form-row">
+      <div class="form-row" *ngIf="visibleFields.reference">
         <label>Reference</label>
         <input type="text" class="form-control" [(ngModel)]="invoice.Reference" placeholder="Enter reference" />
       </div>
 
-      <div class="form-row">
+      <div class="form-row" *ngIf="visibleFields.project">
         <label>Project</label>
-        <input type="text" class="form-control" [(ngModel)]="invoice.ProjectName" placeholder="Enter project name" />
+        <div class="project-combo" [class.open]="showProjectDropdown">
+          <div class="entity-select-box" *ngIf="!showProjectDropdown" (click)="openProjectDropdown()">
+            <div class="entity-select-text">
+              <div class="entity-select-title" *ngIf="invoice.ProjectName">{{ invoice.ProjectName }}</div>
+              <div class="entity-select-title placeholder" *ngIf="!invoice.ProjectName">Select or create project…</div>
+            </div>
+            <a href="javascript:;" class="entity-select-clear" *ngIf="invoice.ProjectName" title="Clear"
+              (click)="clearProject(); $event.stopPropagation()">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+            <i class="fa-solid fa-pen entity-select-chevron" *ngIf="invoice.ProjectName" title="Edit project"
+              (click)="editSelectedProject(); $event.stopPropagation()"></i>
+          </div>
+
+          <div class="project-combo-input" *ngIf="showProjectDropdown">
+            <input type="text" class="form-control" [(ngModel)]="projectSearchText" name="projectSearch"
+              placeholder="Search project…" autofocus (keydown.escape)="closeProjectDropdown()" />
+            <i class="fa-solid fa-xmark project-combo-close" (click)="closeProjectDropdown()"></i>
+          </div>
+
+          <div class="project-dropdown-panel" *ngIf="showProjectDropdown">
+            <a href="javascript:;" class="project-create-link" (click)="openAddProject()">+ Create project</a>
+            <div class="project-option" *ngFor="let p of filteredProjects"
+              [class.selected]="p.Id === invoice.ProjectId" (click)="selectProject(p)">
+              <span>{{ p.Title }}</span>
+              <i class="fa-solid fa-check" *ngIf="p.Id === invoice.ProjectId"></i>
+            </div>
+            <div class="project-option-empty" *ngIf="!filteredProjects.length">No projects found</div>
+          </div>
+        </div>
       </div>
 
       <div class="form-row two-col">
@@ -94,65 +185,122 @@
 
       <!-- Line items grid -->
       <div class="lines-toolbar">
-        <span class="lines-hint">Prices are exc. tax</span>
+        <span class="lines-hint">Prices are {{ invoice.PricesIncludeTax ? 'inc. tax' : 'exc. tax' }}</span>
+        <div class="lines-toolbar-actions">
+          <select class="form-select form-select-sm lines-toolbar-select" [(ngModel)]="invoice.CurrencyId" (ngModelChange)="onCurrencyChange()">
+            <option [ngValue]="null">Currency…</option>
+            <option *ngFor="let c of currencies" [ngValue]="c.Id">{{ c.Code }}</option>
+          </select>
+          <select class="form-select form-select-sm lines-toolbar-select" [(ngModel)]="invoice.PricesIncludeTax" (ngModelChange)="onPricesIncludeTaxChange()">
+            <option [ngValue]="false">Prices are exc. tax</option>
+            <option [ngValue]="true">Prices are inc. tax</option>
+          </select>
+          <div class="edit-fields-wrap line-edit-fields-wrap">
+            <button type="button" class="btn-edit-fields" (click)="showLineFieldsMenu = !showLineFieldsMenu">
+              <i class="fa-solid fa-sliders"></i> Edit Fields
+            </button>
+            <div class="edit-fields-menu" *ngIf="showLineFieldsMenu">
+              <div class="edit-fields-item" *ngFor="let f of lineFieldToggles">
+                <button type="button" class="toggle-switch" [class.on]="visibleLineFields[f.key]"
+                  (click)="visibleLineFields[f.key] = !visibleLineFields[f.key]">
+                  <span class="toggle-knob"></span>
+                </button>
+                <span>{{ f.label }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="invoice-lines-table-wrap">
+      <div class="table-responsive invoice-lines-table-wrap">
         <table class="invoice-lines-table">
           <thead>
             <tr>
-              <th class="col-handle"></th>
-              <th class="col-description">Description <span class="req">*</span></th>
-              <th class="col-qty">Qty <span class="req">*</span></th>
-              <th class="col-price">Price</th>
-              <th class="col-tax">Tax rate</th>
-              <th class="col-account">Account <span class="req">*</span></th>
-              <th class="col-discount">Discount</th>
-              <th class="col-total text-end">Total</th>
-              <th class="col-actions"></th>
+              <th style="width: 26px;"></th>
+              <th>Description *</th>
+              <th style="width: 70px;">Qty *</th>
+              <th style="width: 90px;">Price</th>
+              <th style="width: 70px;" *ngIf="visibleLineFields.taxRate">Tax rate</th>
+              <th style="width: 160px;" *ngIf="visibleLineFields.account">Account *</th>
+              <th style="width: 100px;" *ngIf="visibleLineFields.discount">Discount</th>
+              <th style="width: 160px;" *ngIf="visibleLineFields.revenueRecognition">Revenue recognition</th>
+              <th style="width: 160px;" *ngIf="visibleLineFields.costCenter">Cost center</th>
+              <th style="width: 100px;" class="text-end" *ngIf="visibleLineFields.total">Total</th>
+              <th style="width: 70px;"></th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let line of lines; let i = index;">
-              <td class="col-handle drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
-              <td class="col-description">
-                <app-searchable-select [options]="productOptions" [freeText]="true" [text]="line.Description"
-                  [value]="line.ProductId" placeholder="Description" createLabel="Create item"
-                  emptyText="No items found" (textChange)="onLineDescriptionChange(line, $event)"
-                  (valueChange)="onLineProductChange(line, $event)" (create)="openAddProduct(line)">
-                </app-searchable-select>
+              <td class="drag-handle-cell"><i class="fa-solid fa-grip-vertical"></i></td>
+              <td>
+                <div class="desc-cell">
+                  <input type="text" class="form-control form-control-sm desc-input" [(ngModel)]="line.Description"
+                    placeholder="Description or search items…" (ngModelChange)="recalculateLine(line)" />
+                  <div class="desc-picker" title="Pick an item">
+                    <i class="fa-solid fa-chevron-down"></i>
+                    <select class="desc-picker-native" [(ngModel)]="line.ProductId" (ngModelChange)="onProductSelect(line)">
+                      <option [ngValue]="null">Select item…</option>
+                      <option *ngFor="let p of products" [ngValue]="p.Id">{{ p.Title }}</option>
+                    </select>
+                  </div>
+                  <a href="javascript:;" class="quick-add-icon desc-add" title="Add new item" (click)="openAddProduct(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
+                </div>
+                <div class="field-error-pill" *ngIf="attemptedSave && !line.Description">Description is required</div>
               </td>
-              <td class="col-qty">
-                <input type="number" min="0" step="0.01" class="line-input text-end" [(ngModel)]="line.Quantity"
-                  (ngModelChange)="recalculateLine(line)" />
+              <td>
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.Quantity" (ngModelChange)="recalculateLine(line)" />
               </td>
-              <td class="col-price">
-                <input type="number" min="0" step="0.01" class="line-input text-end" [(ngModel)]="line.Price"
-                  (ngModelChange)="recalculateLine(line)" />
+              <td>
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.Price" (ngModelChange)="recalculateLine(line)" />
               </td>
-              <td class="col-tax">
-                <div class="line-input-suffix">
-                  <input type="number" min="0" step="0.01" class="line-input" [(ngModel)]="line.TaxRate"
-                    (ngModelChange)="recalculateLine(line)" />
-                  <span class="suffix">%</span>
+              <td *ngIf="visibleLineFields.taxRate">
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.TaxRate" (ngModelChange)="recalculateLine(line)" />
+              </td>
+              <td *ngIf="visibleLineFields.account">
+                <div class="d-flex gap-1">
+                  <select class="form-select form-select-sm" [(ngModel)]="line.AccountId" (ngModelChange)="recalculateLine(line)">
+                    <option [ngValue]="null">Select…</option>
+                    <option *ngFor="let a of accounts" [ngValue]="a.Id">{{ a.Title }}</option>
+                  </select>
+                  <a href="javascript:;" class="quick-add-icon" title="Add new account" (click)="openAddAccount(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
+                </div>
+                <div class="field-error-pill" *ngIf="attemptedSave && !line.AccountId">Account is required</div>
+              </td>
+              <td *ngIf="visibleLineFields.discount">
+                <input type="number" min="0" step="0.01" class="form-control form-control-sm text-end"
+                  [(ngModel)]="line.DiscountPercentage" (ngModelChange)="recalculateLine(line)" placeholder="Optional %" />
+              </td>
+              <td *ngIf="visibleLineFields.revenueRecognition">
+                <div class="d-flex gap-1">
+                  <select class="form-select form-select-sm" [(ngModel)]="line.RevenueRecognitionId">
+                    <option [ngValue]="null">Select…</option>
+                    <option *ngFor="let r of revenueRecognitions" [ngValue]="r.Id">{{ r.Title }}</option>
+                  </select>
+                  <a href="javascript:;" class="quick-add-icon" title="Add new revenue recognition" (click)="openAddRevenueRecognition(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
                 </div>
               </td>
-              <td class="col-account">
-                <app-searchable-select [options]="accountOptions" [value]="line.AccountId" [clearable]="true"
-                  placeholder="Select" searchPlaceholder="Search accounts..." createLabel="Create account"
-                  emptyText="No accounts found" (valueChange)="onLineAccountChange(line, $event)"
-                  (create)="openAddAccount(line)">
-                </app-searchable-select>
-              </td>
-              <td class="col-discount">
-                <div class="line-input-suffix">
-                  <input type="number" min="0" step="0.01" class="line-input" placeholder="Optional"
-                    [(ngModel)]="line.DiscountPercentage" (ngModelChange)="recalculateLine(line)" />
-                  <span class="suffix">%</span>
+              <td *ngIf="visibleLineFields.costCenter">
+                <div class="d-flex gap-1">
+                  <select class="form-select form-select-sm" [(ngModel)]="line.CostCenterId">
+                    <option [ngValue]="null">Select…</option>
+                    <option *ngFor="let cc of costCenters" [ngValue]="cc.Id">{{ cc.Title }}</option>
+                  </select>
+                  <a href="javascript:;" class="quick-add-icon" title="Add new cost center" (click)="openAddCostCenter(line)">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
                 </div>
               </td>
-              <td class="col-total text-end line-total">{{ line.LineTotal | number:'1.2-2' }}</td>
-              <td class="col-actions">
+              <td class="text-end fw-600" *ngIf="visibleLineFields.total">{{ line.LineTotal | number:'1.2-2' }}</td>
+              <td class="text-center">
                 <a href="javascript:;" class="row-action-btn" title="Duplicate" (click)="duplicateLine(i)">
                   <i class="fa-solid fa-copy"></i>
                 </a>
@@ -167,133 +315,263 @@
 
       <div class="lines-footer">
         <button class="btn-line-action" (click)="addLine()"><i class="fa-solid fa-plus"></i> Add line</button>
-        <button class="btn-line-action" (click)="clearLines()"><i class="fa-regular fa-trash-can"></i> Clear line</button>
+        <button class="btn-line-action" (click)="clearLines()"><i class="fa-solid fa-trash-can"></i> Clear line</button>
       </div>
 
       <!-- Totals -->
       <div class="totals-section">
-        <div class="totals-row">
-          <span>Subtotal</span>
-          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.Subtotal | number:'1.2-2' }}</span>
+        <div class="adjust-total-wrap">
+          <button type="button" class="btn-adjust-total" (click)="showAdjustTotal = !showAdjustTotal">
+            Adjust Total <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="adjust-total-menu" *ngIf="showAdjustTotal">
+            <div class="adjust-total-item">
+              <span>Discount %</span>
+              <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.DiscountPercentage" (ngModelChange)="recalculateAll()" />
+            </div>
+            <div class="adjust-total-item">
+              <span>Retention %</span>
+              <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.RetentionPercentage" (ngModelChange)="recalculateAll()" />
+            </div>
+            <div class="adjust-total-item">
+              <span>Round off</span>
+              <input type="number" step="0.01" class="totals-input" [(ngModel)]="invoice.RoundOffAmount" (ngModelChange)="recalculateAll()" />
+            </div>
+          </div>
         </div>
-        <div class="totals-row">
-          <span>Discount %</span>
-          <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.DiscountPercentage" (ngModelChange)="recalculateAll()" />
-        </div>
-        <div class="totals-row">
-          <span>Discount amount</span>
-          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.DiscountAmount | number:'1.2-2' }}</span>
-        </div>
-        <div class="totals-row">
-          <span>Total VAT</span>
-          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.TaxAmount | number:'1.2-2' }}</span>
-        </div>
-        <div class="totals-row">
-          <span>Retention %</span>
-          <input type="number" min="0" step="0.01" class="totals-input" [(ngModel)]="invoice.RetentionPercentage" (ngModelChange)="recalculateAll()" />
-        </div>
-        <div class="totals-row">
-          <span>Retention amount</span>
-          <span>{{ invoice.CurrencySymbol || invoice.CurrencyCode }} {{ invoice.RetentionAmount | number:'1.2-2' }}</span>
-        </div>
-        <div class="totals-row grand">
-          <span>Total</span>
-          <span>{{ invoice.CurrencyCode }} {{ invoice.GrandTotal | number:'1.2-2' }}</span>
+
+        <div class="totals-list">
+          <div class="totals-row">
+            <span>Subtotal</span>
+            <span>{{ invoice.Subtotal | number:'1.2-2' }}</span>
+          </div>
+          <div class="totals-row" *ngIf="(invoice.DiscountAmount || 0) > 0">
+            <span>Discount</span>
+            <span>{{ invoice.DiscountAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="totals-row">
+            <span>Total VAT</span>
+            <span>{{ invoice.TaxAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="totals-row" *ngIf="(invoice.RetentionAmount || 0) > 0">
+            <span>Retention</span>
+            <span>{{ invoice.RetentionAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="totals-row grand">
+            <span>Total</span>
+            <span>{{ invoice.CurrencyCode }} {{ invoice.GrandTotal | number:'1.2-2' }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Notes / Bank details -->
-      <div class="form-row mt-3">
-        <label>Notes</label>
-        <textarea class="form-control" rows="6" [(ngModel)]="invoice.Notes"
-          placeholder="Bank Detail :&#10;BENEFICIARY NAME: ...&#10;BANK NAME: ...&#10;ACCOUNT CURRENCY: ...&#10;ACCOUNT NUMBER: ...&#10;IBAN: ...&#10;SWIFT CODE: ..."></textarea>
+      <!-- Notes / Bank details + Stamp -->
+      <div class="notes-stamp-row">
+        <div class="notes-block">
+          <label>Notes</label>
+          <textarea class="form-control notes-textarea" rows="7" [(ngModel)]="invoice.Notes"
+            placeholder="Bank Detail :&#10;BENEFICIARY NAME: ...&#10;BANK NAME: ...&#10;ACCOUNT CURRENCY: ...&#10;ACCOUNT NUMBER: ...&#10;IBAN: ...&#10;SWIFT CODE: ..."></textarea>
+        </div>
+        <div class="stamp-tile">
+          <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" alt="Stamp" />
+          <ng-container *ngIf="!invoice.StampPath">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Stamp</span>
+          </ng-container>
+        </div>
       </div>
-
-      <div class="doc-actions">
-        <button class="btn btn-outline-secondary btn-sm" (click)="downloadPdf()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="downloadXml()"><i class="fa-solid fa-file-code"></i> Generate XML</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="regenerateQr()"><i class="fa-solid fa-qrcode"></i> Generate QR</button>
       </div>
     </div>
 
+    <!-- Drag handle to resize the preview panel -->
+    <div class="invoice-resize-handle" *ngIf="showPreview" (mousedown)="onResizeStart($event)">
+      <div class="invoice-resize-grip"></div>
+    </div>
+
     <!-- Right: Preview -->
-    <div class="invoice-preview-panel" *ngIf="showPreview">
-      <div class="preview-card" dir="rtl">
+    <div class="invoice-preview-panel" #previewPanel *ngIf="showPreview">
+      <div class="preview-scale-sizer" [style.height.px]="previewScaledHeight">
+      <div class="preview-paper" #previewPaper [style.transform]="'scale(' + previewScale + ')'">
+      <div class="preview-card">
+
+        <!-- Company header: EN left / logo center / AR right -->
         <div class="preview-header">
           <div class="preview-header-left">
             <div class="preview-company-name">{{ invoice.CompanyName }}</div>
-            <div class="preview-company-name-ar">{{ invoice.CompanyArabicName }}</div>
             <div class="preview-small">{{ invoice.CompanyAddress }}</div>
-            <div class="preview-small">VAT: {{ invoice.CompanyVATNumber }}</div>
+            <div class="preview-small" *ngIf="invoice.CustomerPhone">{{ invoice.CustomerPhone }}</div>
+            <div class="preview-small">VAT number {{ invoice.CompanyVATNumber }}</div>
           </div>
-          <div class="preview-header-right">
-            <img *ngIf="invoice.LogoPath" [src]="invoice.LogoPath" class="preview-logo" alt="logo" />
-            <div class="preview-invoice-title">Tax Invoice</div>
-            <div class="preview-invoice-title-ar">فاتورة ضريبية</div>
+          <img *ngIf="invoice.LogoPath" [src]="invoice.LogoPath" class="preview-logo" alt="logo" />
+          <div class="preview-header-right" dir="rtl">
+            <div class="preview-company-name-ar">{{ invoice.CompanyArabicName }}</div>
+            <div class="preview-small">{{ invoice.CompanyArabicAddress }}</div>
+            <div class="preview-small" *ngIf="invoice.CustomerPhone">{{ invoice.CustomerPhone }}</div>
+            <div class="preview-small">رقم التسجيل الضريبي {{ invoice.CompanyVATNumber }}</div>
           </div>
         </div>
 
-        <table class="preview-meta-table">
-          <tr><td>Customer</td><td>{{ invoice.CustomerName }}</td></tr>
-          <tr><td>Address</td><td>{{ invoice.CustomerAddress }}</td></tr>
-          <tr><td>VAT number</td><td>{{ invoice.CustomerVATNumber }}</td></tr>
-          <tr><td>Invoice number</td><td>{{ invoice.InvoiceNumber || '(auto-generated)' }}</td></tr>
-          <tr><td>Date</td><td>{{ invoice.InvoiceDate | date:'yyyy-MM-dd' }}</td></tr>
-          <tr><td>Due date</td><td>{{ invoice.DueDate | date:'yyyy-MM-dd' }}</td></tr>
-          <tr><td>Reference</td><td>{{ invoice.Reference }}</td></tr>
-          <tr><td>Project</td><td>{{ invoice.ProjectName }}</td></tr>
-        </table>
+        <div class="preview-divider"></div>
 
+        <!-- Centered bilingual title -->
+        <div class="preview-title-row">
+          <span class="title-en">Tax Invoice</span>
+          <span class="title-ar">فاتورة ضريبية</span>
+        </div>
+
+        <!-- Meta info box -->
+        <div class="preview-meta-box">
+          <div class="meta-row">
+            <span class="meta-key">Customer</span>
+            <span class="meta-val">{{ invoice.CustomerName }}</span>
+            <span class="meta-key-ar">العميل</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Address</span>
+            <span class="meta-val">{{ invoice.CustomerAddress }}</span>
+            <span class="meta-key-ar">العنوان</span>
+          </div>
+          <div class="meta-row" *ngIf="invoice.CustomerPhone">
+            <span class="meta-key">Phone</span>
+            <span class="meta-val">{{ invoice.CustomerPhone }}</span>
+            <span class="meta-key-ar">الهاتف</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">VAT number</span>
+            <span class="meta-val">{{ invoice.CustomerVATNumber }}</span>
+            <span class="meta-key-ar">رقم التسجيل الضريبي</span>
+          </div>
+          <div class="meta-row-split">
+            <div class="meta-split-col">
+              <div class="meta-row-inner">
+                <span class="meta-key">Invoice number</span>
+                <span class="meta-val">{{ invoice.InvoiceNumber || '(auto-generated)' }}</span>
+                <span class="meta-key-ar">رقم الفاتورة</span>
+              </div>
+              <div class="meta-row-inner" *ngIf="invoice.Reference">
+                <span class="meta-key">Reference</span>
+                <span class="meta-val">{{ invoice.Reference }}</span>
+                <span class="meta-key-ar">رقم المرجع</span>
+              </div>
+              <div class="meta-row-inner" *ngIf="invoice.DueDate">
+                <span class="meta-key">Due date</span>
+                <span class="meta-val">{{ invoice.DueDate | date:'yyyy-MM-dd' }}</span>
+                <span class="meta-key-ar">تاريخ الاستحقاق</span>
+              </div>
+            </div>
+            <div class="meta-split-col">
+              <div class="meta-row-inner">
+                <span class="meta-key">Date</span>
+                <span class="meta-val">{{ invoice.InvoiceDate | date:'yyyy-MM-dd' }}</span>
+                <span class="meta-key-ar">التاريخ</span>
+              </div>
+              <div class="meta-row-inner" *ngIf="invoice.ProjectName">
+                <span class="meta-key">Project</span>
+                <span class="meta-val">{{ invoice.ProjectName }}</span>
+                <span class="meta-key-ar">المشروع</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Line items -->
         <table class="preview-lines-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Description</th>
-              <th>Qty</th>
-              <th>Price</th>
-              <th>Taxable</th>
-              <th>VAT</th>
-              <th>Line amount</th>
+              <th class="col-num">#</th>
+              <th class="col-desc">Description <span class="ar">الوصف</span></th>
+              <th class="col-num-val">Qty <span class="ar">الكمية</span></th>
+              <th class="col-num-val">Price <span class="ar">السعر</span></th>
+              <th class="col-num-val">Taxable amount <span class="ar">المبلغ الخاضع للضريبة</span></th>
+              <th class="col-num-val">VAT amount <span class="ar">القيمة المضافة</span></th>
+              <th class="col-num-val" *ngIf="hasLineDiscounts()">Discount <span class="ar">خصم</span></th>
+              <th class="col-num-val">Line amount <span class="ar">المجموع</span></th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let line of lines; let i = index;">
-              <td>{{ i + 1 }}</td>
-              <td>{{ line.Description }}</td>
-              <td>{{ line.Quantity | number:'1.0-2' }}</td>
-              <td>{{ line.Price | number:'1.2-2' }}</td>
-              <td>{{ line.TaxableAmount | number:'1.2-2' }}</td>
-              <td>{{ line.VATAmount | number:'1.2-2' }}</td>
-              <td>{{ line.LineTotal | number:'1.2-2' }}</td>
+              <td class="col-num">{{ i + 1 }}</td>
+              <td class="col-desc">{{ line.Description }}</td>
+              <td class="col-num-val">{{ line.Quantity | number:'1.0-2' }}</td>
+              <td class="col-num-val">{{ line.Price | number:'1.2-2' }}</td>
+              <td class="col-num-val">{{ line.TaxableAmount | number:'1.2-2' }}</td>
+              <td class="col-num-val">
+                {{ line.VATAmount | number:'1.2-2' }}
+                <span class="sub-rate" *ngIf="line.TaxRate">{{ line.TaxRate }}%</span>
+              </td>
+              <td class="col-num-val" *ngIf="hasLineDiscounts()">
+                {{ line.DiscountAmount | number:'1.2-2' }}
+                <span class="sub-rate" *ngIf="line.DiscountPercentage">{{ line.DiscountPercentage }}%</span>
+              </td>
+              <td class="col-num-val">{{ line.LineTotal | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>
 
-        <table class="preview-totals-table">
-          <tr><td>Subtotal</td><td>{{ invoice.Subtotal | number:'1.2-2' }}</td></tr>
-          <tr><td>Discount</td><td>{{ invoice.DiscountAmount | number:'1.2-2' }}</td></tr>
-          <tr><td>Total VAT</td><td>{{ invoice.TaxAmount | number:'1.2-2' }}</td></tr>
-          <tr><td>Retention</td><td>{{ invoice.RetentionAmount | number:'1.2-2' }}</td></tr>
-          <tr class="grand"><td>Grand total</td><td>{{ invoice.CurrencyCode }} {{ invoice.GrandTotal | number:'1.2-2' }}</td></tr>
-        </table>
-
-        <div class="preview-footer">
-          <div class="preview-bank">
-            <strong>Bank details</strong>
-            <div class="preview-small">{{ invoice.CompanyBankName }}</div>
-            <div class="preview-small">{{ invoice.BankAccountNumber }}</div>
-            <div class="preview-small">{{ invoice.IBAN }}</div>
-            <div class="preview-small">{{ invoice.SwiftCode }}</div>
-          </div>
+        <!-- QR + Totals row -->
+        <div class="preview-qr-totals-row">
           <div class="preview-qr">
             <img *ngIf="qrImageBase64" [src]="qrImageBase64" alt="QR" />
             <div *ngIf="!qrImageBase64" class="preview-qr-placeholder">
               <i class="fa-solid fa-qrcode"></i>
               <span>QR will appear after save</span>
             </div>
-            <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" class="preview-stamp" alt="stamp" />
+            <p class="qr-caption">
+              This QR code is encoded as per ZATCA e-invoicing requirements
+              <span class="ar">تم ترميز هذا الرمز وفقاً لمتطلبات هيئة الزكاة والضريبة والجمارك للفوترة الإلكترونية</span>
+            </p>
           </div>
+
+          <table class="preview-totals-table">
+            <tr>
+              <td class="t-label">Subtotal <span class="ar">المجموع الفرعي</span></td>
+              <td class="t-cur">{{ invoice.CurrencySymbol || invoice.CurrencyCode }}</td>
+              <td class="t-amt">{{ invoice.Subtotal | number:'1.2-2' }}</td>
+            </tr>
+            <tr *ngIf="invoice.DiscountAmount">
+              <td class="t-label">Discount <span class="ar">الخصم</span></td>
+              <td class="t-cur">{{ invoice.CurrencySymbol || invoice.CurrencyCode }}</td>
+              <td class="t-amt">{{ invoice.DiscountAmount | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td class="t-label">Total VAT <span class="ar">إجمالي ضريبة القيمة المضافة</span></td>
+              <td class="t-cur">{{ invoice.CurrencySymbol || invoice.CurrencyCode }}</td>
+              <td class="t-amt">{{ invoice.TaxAmount | number:'1.2-2' }}</td>
+            </tr>
+            <tr *ngIf="invoice.RetentionAmount">
+              <td class="t-label">Retention <span class="ar">الاحتجاز</span></td>
+              <td class="t-cur">{{ invoice.CurrencySymbol || invoice.CurrencyCode }}</td>
+              <td class="t-amt">{{ invoice.RetentionAmount | number:'1.2-2' }}</td>
+            </tr>
+            <tr class="grand">
+              <td class="t-label">Total <span class="ar">المجموع شامل القيمة المضافة</span></td>
+              <td class="t-cur">{{ invoice.CurrencySymbol || invoice.CurrencyCode }}</td>
+              <td class="t-amt">{{ invoice.GrandTotal | number:'1.2-2' }}</td>
+            </tr>
+          </table>
         </div>
+
+        <div class="preview-notes" *ngIf="invoice.Notes">
+          <strong>Notes <span class="ar">ملاحظات</span></strong>
+          <p>{{ invoice.Notes }}</p>
+        </div>
+
+        <div class="preview-bank-detail">
+          <strong>Bank Detail :</strong>
+          <div *ngIf="invoice.BeneficiaryName"><b>BENEFICIARY NAME:</b> {{ invoice.BeneficiaryName }}</div>
+          <div *ngIf="invoice.CompanyBankName"><b>BANK NAME:</b> {{ invoice.CompanyBankName }}</div>
+          <div *ngIf="invoice.AccountCurrency"><b>ACCOUNT CURRENCY:</b> {{ invoice.AccountCurrency }}</div>
+          <div *ngIf="invoice.BankAccountNumber"><b>ACCOUNT NUMBER:</b> {{ invoice.BankAccountNumber }}</div>
+          <div *ngIf="invoice.IBAN"><b>IBAN:</b> {{ invoice.IBAN }}</div>
+          <div *ngIf="invoice.SwiftCode"><b>SWIFT CODE:</b> {{ invoice.SwiftCode }}</div>
+        </div>
+
+        <img *ngIf="invoice.StampPath" [src]="invoice.StampPath" class="preview-stamp" alt="stamp" />
+      </div>
+      </div>
+      </div>
+      <div class="preview-template-bar">
+        <span class="template-label">Template: Standard Invoice</span>
+        <i class="fa-solid fa-chevron-down"></i>
       </div>
     </div>
   </div>

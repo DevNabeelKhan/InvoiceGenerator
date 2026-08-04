@@ -13,12 +13,16 @@ export interface InvoiceProductLine {
     VATAmount?: number | null;
     LineTotal?: number | null;
     AccountId?: number | null;
+    CostCenterId?: number | null;
+    RevenueRecognitionId?: number | null;
     SortOrder?: number | null;
 
     // Related (read-only)
     ProductTitle?: string | null;
     ServiceCode?: string | null;
     AccountTitle?: string | null;
+    CostCenterTitle?: string | null;
+    RevenueRecognitionTitle?: string | null;
 }
 
 export interface InvoiceAttachment {
@@ -37,6 +41,8 @@ export interface Invoice {
     Reference?: string | null;
     PurchaseOrderNumber?: string | null;
     ProjectName?: string | null;
+    ProjectId?: number | null;
+    PricesIncludeTax?: boolean;
     CompanyId?: number | null;
     CustomerId?: number | null;
     CurrencyId?: number | null;
@@ -82,6 +88,7 @@ export interface Invoice {
     IBAN?: string | null;
     SwiftCode?: string | null;
     AccountCurrency?: string | null;
+    BeneficiaryName?: string | null;
     LogoPath?: string | null;
     StampPath?: string | null;
 
@@ -98,15 +105,28 @@ export interface Invoice {
 export interface Currency {
     Id?: number | null;
     Code?: string | null;
-    Name?: string | null;
+    Title?: string | null;
     Symbol?: string | null;
     ExchangeRate?: number | null;
     IsActive?: boolean;
 }
 
+export interface Project {
+    Id?: number | null;
+    Title?: string | null;
+    IsActive?: boolean;
+}
+
+export interface ProjectDocument {
+    Id?: number | null;
+    ProjectId?: number | null;
+    DocumentTitle?: string | null;
+    Url?: string | null;
+}
+
 export interface Company {
     Id?: number | null;
-    Name?: string | null;
+    Title?: string | null;
     ArabicName?: string | null;
     Address?: string | null;
     ArabicAddress?: string | null;
@@ -114,6 +134,7 @@ export interface Company {
     Phone?: string | null;
     Website?: string | null;
     VATNumber?: string | null;
+    LogoUrl?: string | null;
     LogoPath?: string | null;
     StampPath?: string | null;
     BankName?: string | null;

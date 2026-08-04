@@ -22,6 +22,7 @@ export class SideBarComponent {
   
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+    this.syncBodyClass();
   }
 
   toggleConfigMenu() {
@@ -31,7 +32,13 @@ export class SideBarComponent {
   closeSidebarOnMobile() {
     if (window.innerWidth < 992) {
       this.sidebarOpen = false;
+      this.syncBodyClass();
     }
+  }
+
+  private syncBodyClass() {
+    document.body.classList.toggle('sidebar-open', this.sidebarOpen);
+    document.body.classList.toggle('sidebar-closed', !this.sidebarOpen);
   }
 
   constructor( 
@@ -40,6 +47,7 @@ export class SideBarComponent {
     readonly alert: AlertService,) { 
       this.user = this.storage.getItem('User');
       this.sidebarOpen = window.innerWidth >= 992;
+      this.syncBodyClass();
      }
     
   logout() {

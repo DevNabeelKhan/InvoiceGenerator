@@ -38,6 +38,13 @@ export class CustomerModalComponent {
   selectedId: number | null = null;
   isSaving: boolean = false;
 
+  sections = {
+    business: true,
+    address: true,
+    invoicing: true,
+    beneficiaries: true
+  };
+
   allBeneficiaries: Beneficiary[] = [];
   selectedBeneficiaryIds: number[] = [];
   loadingBeneficiaries: boolean = false;
