@@ -264,6 +264,16 @@
                 </button>
                 <span>{{ f.label }}</span>
               </div>
+              <div class="edit-fields-divider"></div>
+              <div class="edit-fields-heading">Custom fields</div>
+              <div class="edit-fields-item" *ngFor="let cf of customFields">
+                <button type="button" class="toggle-switch" [class.on]="cf.Visible"
+                  (click)="cf.Visible = !cf.Visible">
+                  <span class="toggle-knob"></span>
+                </button>
+                <span>{{ cf.Name }}</span>
+              </div>
+              <a href="javascript:;" class="edit-fields-add-link" (click)="openAddCustomField()">+ Add custom field</a>
             </div>
           </div>
         </div>

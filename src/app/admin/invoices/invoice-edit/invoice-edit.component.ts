@@ -136,8 +136,8 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     taxRate: true,
     account: true,
     discount: true,
-    revenueRecognition: true,
-    costCenter: true,
+    revenueRecognition: false,
+    costCenter: false,
     total: true
   };
   lineFieldToggles: { key: 'taxRate' | 'account' | 'discount' | 'revenueRecognition' | 'costCenter' | 'total'; label: string }[] = [
