@@ -194,6 +194,32 @@
     z-index: 100;
 }
 
+.edit-fields-divider {
+    height: 1px;
+    background: #f2f4f7;
+    margin: 8px 0;
+}
+
+.edit-fields-heading {
+    padding: 4px 6px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475467;
+}
+
+.edit-fields-add-link {
+    display: block;
+    padding: 8px 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4f46e5;
+    text-decoration: none;
+}
+
+.edit-fields-add-link:hover {
+    text-decoration: underline;
+}
+
 .edit-fields-item {
     display: flex;
     align-items: center;
@@ -704,6 +730,25 @@ textarea.form-control {
     flex-shrink: 0;
     color: #98a2b3;
     font-size: 10px;
+}
+
+.line-select-clear {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #98a2b3;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 2px;
+}
+
+.line-select-clear:hover {
+    background: #f2f4f7;
+    color: #101828;
 }
 
 .line-dropdown-panel {

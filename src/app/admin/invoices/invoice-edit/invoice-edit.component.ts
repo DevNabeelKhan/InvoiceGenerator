@@ -18,6 +18,9 @@ import { ConfigurationItem, getConfigurationTypeBySlug } from '../../../shared/m
 
 import { CustomerModalComponent } from '../../customers/customer-modal/customer-modal.component';
 import { ProductModalComponent } from '../../products/product-modal/product-modal.component';
+import { CustomFieldModalComponent } from '../custom-field-modal/custom-field-modal.component';
+
+import { CustomField } from '../../../shared/models/custom-field.model';
 import { ConfigurationModalComponent } from '../../configuration/configuration-modal/configuration-modal.component';
 import { CompanyModalComponent } from '../../settings/company-settings/company-modal/company-modal.component';
 import { CurrencyModalComponent } from '../../settings/currencies/currency-modal/currency-modal.component';
@@ -105,10 +108,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showFieldsMenu = false;
   visibleFields: { purchaseOrder: boolean; reference: boolean; project: boolean; warehouse: boolean } = {
-    purchaseOrder: true,
-    reference: true,
-    project: true,
-    warehouse: true
+    purchaseOrder: false,
+    reference: false,
+    project: false,
+    warehouse: false
   };
   fieldToggles: { key: 'purchaseOrder' | 'reference' | 'project' | 'warehouse'; label: string }[] = [
     { key: 'purchaseOrder', label: 'Purchase order' },
@@ -116,6 +119,8 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'project', label: 'Project' },
     { key: 'warehouse', label: 'Warehouse' }
   ];
+
+  customFields: CustomField[] = [];
 
   openDescDropdownIndex: number | null = null;
   descDropdownPos: { top: number; left: number; width: number } = { top: 0, left: 0, width: 0 };
@@ -477,6 +482,16 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.closeWarehouseDropdown();
   }
 
+  async openAddCustomField() {
+    const ref = this.dialog.open(CustomFieldModalComponent, {
+      data: null, width: '680px', maxWidth: '95vw', disableClose: true
+    });
+    const result: any = await firstValueFrom(ref.afterClosed());
+    if (result) {
+      this.customFields.push({ ...result, Visible: true });
+    }
+  }
+
   async editSelectedWarehouse() {
     if (!this.invoice.WarehouseId) return;
     const ref = this.dialog.open(WarehouseModalComponent, {
@@ -762,6 +777,11 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       line.RevenueRecognitionId = option.Id;
     }
     this.closeLineFieldDropdown();
+  }
+
+  clearAccount(line: InvoiceProductLine) {
+    line.AccountId = null;
+    this.recalculateLine(line);
   }
 
   async createLineOption(line: InvoiceProductLine) {

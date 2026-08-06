@@ -1,0 +1,85 @@
+<div class="cf-modal-header">
+  <h2>Add custom field</h2>
+  <div class="cf-modal-header-right">
+    <span class="cf-limit">Fields in use: 0 / 1</span>
+    <a href="javascript:;" class="cf-increase-link">Increase limit</a>
+    <button class="cf-save-btn" [disabled]="isSaving" (click)="onSubmit()">Save</button>
+    <button class="cf-close" (click)="cancel()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</div>
+
+<div class="cf-modal-body">
+  <form>
+    <div class="cf-row">
+      <label class="cf-label">Name<span class="text-danger">*</span></label>
+      <div class="cf-input-wrap">
+        <input type="text" class="form-control" [(ngModel)]="field.Name" name="name" placeholder="Empty" />
+        <a href="javascript:;" class="cf-ar-link" (click)="showArabicName = !showArabicName">+ ar</a>
+      </div>
+    </div>
+
+    <div class="cf-row" *ngIf="showArabicName">
+      <label class="cf-label">Arabic name</label>
+      <div class="cf-input-wrap">
+        <input type="text" class="form-control" [(ngModel)]="field.ArabicName" name="arabicName" placeholder="Arabic name" />
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label class="cf-label">Applies to<span class="text-danger">*</span></label>
+      <div class="cf-options">
+        <label class="cf-check">
+          <input type="checkbox" [(ngModel)]="field.AppliesTo.sales" name="sales" />
+          <span>
+            <strong>Sales</strong>
+            <small>Quotes, invoices, credit notes, delivery notes</small>
+          </span>
+        </label>
+        <label class="cf-check">
+          <input type="checkbox" [(ngModel)]="field.AppliesTo.purchases" name="purchases" />
+          <span>
+            <strong>Purchases</strong>
+            <small>Bills, debit notes, purchase orders</small>
+          </span>
+        </label>
+        <label class="cf-check">
+          <input type="checkbox" [(ngModel)]="field.AppliesTo.contacts" name="contacts" />
+          <span>
+            <strong>Contacts</strong>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label class="cf-label">Field level</label>
+      <div class="cf-options">
+        <label class="cf-radio">
+          <input type="radio" name="fieldLevel" value="Document" [(ngModel)]="field.FieldLevel" />
+          <span>
+            <strong>Document-level</strong>
+            <small>Whether the field is entered at the document-level (e.g. invoice) or line item-level (e.g. invoice line items)</small>
+          </span>
+        </label>
+        <label class="cf-radio">
+          <input type="radio" name="fieldLevel" value="Line" [(ngModel)]="field.FieldLevel" />
+          <span>
+            <strong>Line items</strong>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cf-row">
+      <label class="cf-label">Field type<span class="text-danger">*</span></label>
+      <div class="cf-input-wrap">
+        <select class="form-select" [(ngModel)]="field.FieldType" name="fieldType">
+          <option [ngValue]="null">Field type</option>
+          <option *ngFor="let t of fieldTypes" [ngValue]="t">{{ t }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</div>

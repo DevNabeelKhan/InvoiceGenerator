@@ -1,0 +1,148 @@
+:host {
+  display: block;
+  min-width: 620px;
+  max-width: 95vw;
+}
+
+.cf-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.cf-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cf-modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cf-limit {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.cf-increase-link {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.cf-increase-link:hover {
+  text-decoration: underline;
+}
+
+.cf-save-btn {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cf-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cf-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.cf-modal-body {
+  padding: 24px 20px;
+}
+
+.cf-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cf-label {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #374151;
+  padding-top: 6px;
+}
+
+.cf-label .text-danger {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.cf-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cf-input-wrap .form-control,
+.cf-input-wrap .form-select {
+  flex: 1;
+}
+
+.cf-ar-link {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cf-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cf-check,
+.cf-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.cf-check input,
+.cf-radio input {
+  margin-top: 3px;
+}
+
+.cf-check span,
+.cf-radio span {
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-check strong,
+.cf-radio strong {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.cf-check small,
+.cf-radio small {
+  font-size: 12px;
+  color: #6b7280;
+}
