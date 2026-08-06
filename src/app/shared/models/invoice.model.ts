@@ -42,6 +42,8 @@ export interface Invoice {
     PurchaseOrderNumber?: string | null;
     ProjectName?: string | null;
     ProjectId?: number | null;
+    WarehouseName?: string | null;
+    WarehouseId?: number | null;
     PricesIncludeTax?: boolean;
     CompanyId?: number | null;
     CustomerId?: number | null;
@@ -122,6 +124,19 @@ export interface ProjectDocument {
     ProjectId?: number | null;
     DocumentTitle?: string | null;
     Url?: string | null;
+}
+
+export interface Warehouse {
+    Id?: number | null;
+    Code?: string | null;
+    Name?: string | null;
+    Phone?: string | null;
+    StreetAddress?: string | null;
+    BuildingNumber?: string | null;
+    District?: string | null;
+    City?: string | null;
+    PostalCode?: string | null;
+    IsActive?: boolean;
 }
 
 export interface Company {
