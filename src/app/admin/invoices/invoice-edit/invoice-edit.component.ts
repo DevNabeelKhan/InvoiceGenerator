@@ -86,6 +86,9 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedCompany: Company | null = null;
   selectedCustomer: Customer | null = null;
 
+  private initialSnapshot: { invoice: Invoice; lines: InvoiceProductLine[] } | null = null;
+  descriptionEverHasValue = false;
+
   showProjectDropdown = false;
   projectSearchText: string = '';
 
@@ -184,6 +187,9 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.invoice.CurrencyCode = sar.Code || '';
       }
     }
+
+    this.takeInitialSnapshot();
+    this.updateDescriptionEverFlag();
   }
 
   private toDateInput(d: Date): string {
@@ -574,7 +580,51 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.invoice.CustomerPhone = (this.selectedCustomer as any).Phone || this.selectedCustomer.InvoicingPhone;
       this.invoice.CustomerArabicName = (this.selectedCustomer as any).ArabicName;
       this.invoice.CustomerArabicAddress = (this.selectedCustomer as any).ArabicAddress;
+    } else {
+      this.invoice.CustomerName = null as any;
+      this.invoice.CustomerVATNumber = null as any;
+      this.invoice.CustomerAddress = null as any;
+      this.invoice.CustomerCity = null as any;
+      this.invoice.CustomerEmail = null as any;
+      this.invoice.CustomerPhone = null as any;
+      this.invoice.CustomerArabicName = null as any;
+      this.invoice.CustomerArabicAddress = null as any;
     }
+  }
+
+  canFinalize(): boolean {
+    if (!this.invoice.CustomerId) return false;
+    return !this.isSameAsInitial() || this.descriptionEverHasValue;
+  }
+
+  private isSameAsInitial(): boolean {
+    if (!this.initialSnapshot) return true;
+    return JSON.stringify(this.invoice) === JSON.stringify(this.initialSnapshot.invoice) &&
+      JSON.stringify(this.lines) === JSON.stringify(this.initialSnapshot.lines);
+  }
+
+  private takeInitialSnapshot(): void {
+    this.initialSnapshot = {
+      invoice: JSON.parse(JSON.stringify(this.invoice)),
+      lines: JSON.parse(JSON.stringify(this.lines))
+    };
+  }
+
+  private updateDescriptionEverFlag(): void {
+    if (this.lines.some(l => (l.Description || '').trim())) {
+      this.descriptionEverHasValue = true;
+    }
+  }
+
+  private trackDescriptionValue(value: string | null | undefined): void {
+    if (value && value.trim()) {
+      this.descriptionEverHasValue = true;
+    }
+  }
+
+  onDescriptionChange(line: InvoiceProductLine): void {
+    this.trackDescriptionValue(line.Description);
+    this.recalculateLine(line);
   }
 
   onCurrencyChange() {
@@ -631,6 +681,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const product = this.products.find(p => p.Id === line.ProductId);
     if (product) {
       line.Description = product.ServiceDescription || product.Title || '';
+      this.trackDescriptionValue(line.Description);
       line.Price = product.SellingPrice || 0;
       line.AccountId = product.RevenueAccountID || null;
       line.TaxRate = product.RevenueTaxRatePercentage ?? line.TaxRate ?? 15;
@@ -812,6 +863,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastr.error('Invoice date is required');
       return false;
     }
+    if (!this.invoice.DueDate) {
+      this.toastr.error('Due date is required');
+      return false;
+    }
     if (!this.lines.length) {
       this.toastr.error('At least one invoice line is required');
       return false;
@@ -827,6 +882,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (!line.Quantity || line.Quantity <= 0) {
         this.toastr.error('Quantity must be greater than zero');
+        return false;
+      }
+      if (!line.Price || line.Price <= 0) {
+        this.toastr.error('Price must be greater than zero');
         return false;
       }
     }
