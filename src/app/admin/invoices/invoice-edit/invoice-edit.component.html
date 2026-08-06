@@ -15,7 +15,7 @@
       <button class="btn-topbar" [disabled]="isSaving" (click)="onSave('Draft')">
         <i class="fa-regular fa-floppy-disk"></i> Save draft
       </button>
-      <button class="btn-topbar-primary" [disabled]="isSaving" (click)="onSave('Approved')">
+      <button class="btn-topbar-primary" [disabled]="!canFinalize" (click)="onSave('Approved')">
         <i class="fa-solid fa-check"></i> {{ isSaving ? 'Saving...' : 'Finalize' }}
       </button>
       <div class="doc-menu-wrap">

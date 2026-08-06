@@ -40,6 +40,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading: boolean = false;
   showPreview: boolean = true;
   attemptedSave: boolean = false;
+  private descriptionEverEntered: boolean = false;
 
   previewPanelWidth: number = 540;
   private readonly minPreviewWidth = 360;
@@ -649,6 +650,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   onProductSelect(line: InvoiceProductLine) {
     const product = this.products.find(p => p.Id === line.ProductId);
     if (product) {
+      this.descriptionEverEntered = true;
       line.Description = product.ServiceDescription || product.Title || '';
       line.Price = product.SellingPrice || 0;
       line.AccountId = product.RevenueAccountID || null;
@@ -672,6 +674,7 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onLineDescriptionChange(line: InvoiceProductLine, description: string) {
     line.Description = description;
+    if ((description || '').trim()) this.descriptionEverEntered = true;
     this.recalculateLine(line);
   }
 
@@ -749,6 +752,30 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------------- Validation ----------------
+
+  get canFinalize(): boolean {
+    if (this.isSaving) return false;
+    return this.descriptionEverEntered || this.hasInvoiceInput();
+  }
+
+  private hasInvoiceInput(): boolean {
+    const inv = this.invoice;
+    if (inv.CustomerId) return true;
+    if ((inv.PurchaseOrderNumber || '').trim()) return true;
+    if ((inv.Reference || '').trim()) return true;
+    if (inv.ProjectId) return true;
+    if (inv.WarehouseId) return true;
+    if ((inv.Notes || '').trim()) return true;
+    if ((inv.DiscountPercentage || 0) > 0 || (inv.RetentionPercentage || 0) > 0 || (inv.RoundOffAmount || 0) !== 0) return true;
+    return this.lines.some(l =>
+      (l.Description || '').trim() !== '' ||
+      !!l.ProductId ||
+      (l.Price || 0) > 0 ||
+      !!l.AccountId ||
+      !!l.CostCenterId ||
+      !!l.RevenueRecognitionId ||
+      (l.DiscountPercentage || 0) > 0);
+  }
 
   isValid(): boolean {
     if (!this.invoice.CustomerId) {
