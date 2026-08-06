@@ -181,6 +181,9 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.loadInvoice(this.invoiceId);
     } else {
       this.addLine();
+      const today = this.toDateInput(new Date());
+      this.invoice.InvoiceDate = today;
+      this.invoice.DueDate = today;
       if (this.companies.length) {
         this.invoice.CompanyId = this.companies[0].Id;
         this.onCompanyChange();
