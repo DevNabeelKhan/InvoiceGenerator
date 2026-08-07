@@ -72,13 +72,13 @@
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Country</label>
-                            <input type="text" class="form-control" name="Country" [(ngModel)]="company.Country" maxlength="100" />
-                            <div class="wf-char-count">{{ company.Country?.length || 0 }}/100</div>
+                            <input type="text" class="form-control" name="Country" [(ngModel)]="company.Country" maxlength="50" />
+                            <div class="wf-char-count">{{ company.Country?.length || 0 }}/50</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">City</label>
-                            <input type="text" class="form-control" name="City" [(ngModel)]="company.City" maxlength="100" />
-                            <div class="wf-char-count">{{ company.City?.length || 0 }}/100</div>
+                            <input type="text" class="form-control" name="City" [(ngModel)]="company.City" maxlength="50" />
+                            <div class="wf-char-count">{{ company.City?.length || 0 }}/50</div>
                         </div>
                     </div>
 
@@ -119,13 +119,13 @@
                     <div class="row">
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Beneficiary Name</label>
-                            <input type="text" class="form-control" name="BeneficiaryName" [(ngModel)]="company.BeneficiaryName" maxlength="255" />
-                            <div class="wf-char-count">{{ company.BeneficiaryName?.length || 0 }}/255</div>
+                            <input type="text" class="form-control" name="BeneficiaryName" [(ngModel)]="company.BeneficiaryName" maxlength="100" />
+                            <div class="wf-char-count">{{ company.BeneficiaryName?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Bank Name</label>
-                            <input type="text" class="form-control" name="BankName" [(ngModel)]="company.BankName" maxlength="255" />
-                            <div class="wf-char-count">{{ company.BankName?.length || 0 }}/255</div>
+                            <input type="text" class="form-control" name="BankName" [(ngModel)]="company.BankName" maxlength="100" />
+                            <div class="wf-char-count">{{ company.BankName?.length || 0 }}/100</div>
                         </div>
                     </div>
 

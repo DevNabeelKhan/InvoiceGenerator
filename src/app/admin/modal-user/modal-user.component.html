@@ -29,14 +29,16 @@
                                         <label class="mb-1">Full Name</label>
                                         <div class="form-group">
                                             <input type="text" name="FullName" [(ngModel)]="userModel.FullName"
-                                                class="form-control" placeholder="Enter Full Name">
+                                                class="form-control" placeholder="Enter Full Name" maxlength="100">
+                                            <div class="wf-char-count">{{ userModel.FullName?.length || 0 }}/100</div>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 mb-2">
                                         <label class="mb-1">User Name</label>
                                         <div class="form-group">
                                             <input type="text" name="UserName" [(ngModel)]="userModel.UserName"
-                                                class="form-control" placeholder="Enter User Name">
+                                                class="form-control" placeholder="Enter User Name" maxlength="100">
+                                            <div class="wf-char-count">{{ userModel.UserName?.length || 0 }}/100</div>
                                         </div>
                                     </div>
                                 </div>
@@ -45,7 +47,8 @@
                                         <label class="mb-1">Password</label>
                                         <div class="form-group">
                                             <input type="text" name="Password"
-                                                [(ngModel)]="userModel.Password" class="form-control" placeholder="Enter Password">
+                                                [(ngModel)]="userModel.Password" class="form-control" placeholder="Enter Password" maxlength="100">
+                                            <div class="wf-char-count">{{ userModel.Password?.length || 0 }}/100</div>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 mb-2">
