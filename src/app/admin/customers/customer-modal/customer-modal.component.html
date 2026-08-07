@@ -28,13 +28,15 @@
                         <div class="wf-field">
                             <label>Customer name <span class="text-danger">*</span></label>
                             <input type="text" name="CustomerName" [(ngModel)]="customerModel.CustomerName"
-                                class="form-control" placeholder="Required" required>
+                                class="form-control" placeholder="Required" required maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.CustomerName?.length || 0 }}/50</div>
                         </div>
                         <div class="wf-field">
                             <label>Tax registration number</label>
                             <input type="text" name="TaxRegistrationNumber"
                                 [(ngModel)]="customerModel.TaxRegistrationNumber" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.TaxRegistrationNumber?.length || 0 }}/50</div>
                         </div>
                     </div>
                 </div>
@@ -52,30 +54,35 @@
                         <div class="wf-field">
                             <label>City</label>
                             <input type="text" name="City" [(ngModel)]="customerModel.City"
-                                class="form-control" placeholder="Optional">
+                                class="form-control" placeholder="Optional" maxlength="25">
+                            <div class="wf-char-count">{{ customerModel.City?.length || 0 }}/25</div>
                         </div>
                         <div class="wf-field">
                             <label>District</label>
                             <input type="text" name="District" [(ngModel)]="customerModel.District"
-                                class="form-control" placeholder="Optional">
+                                class="form-control" placeholder="Optional" maxlength="25">
+                            <div class="wf-char-count">{{ customerModel.District?.length || 0 }}/25</div>
                         </div>
                         <div class="wf-field">
                             <label>Postal code</label>
                             <input type="text" name="PostalCode" [(ngModel)]="customerModel.PostalCode"
-                                class="form-control" placeholder="Optional">
+                                class="form-control" placeholder="Optional" maxlength="25">
+                            <div class="wf-char-count">{{ customerModel.PostalCode?.length || 0 }}/25</div>
                         </div>
                     </div>
                     <div class="wf-grid wf-grid-3">
                         <div class="wf-field wf-field-span2">
                             <label>Street address</label>
                             <input type="text" name="StreetAddress" [(ngModel)]="customerModel.StreetAddress"
-                                class="form-control" placeholder="Optional">
+                                class="form-control" placeholder="Optional" maxlength="100">
+                            <div class="wf-char-count">{{ customerModel.StreetAddress?.length || 0 }}/100</div>
                         </div>
                         <div class="wf-field">
                             <label>Building number</label>
                             <input type="text" name="BuildingNumber"
                                 [(ngModel)]="customerModel.BuildingNumber" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.BuildingNumber?.length || 0 }}/50</div>
                         </div>
                     </div>
                     <div class="wf-grid wf-grid-3">
@@ -83,7 +90,8 @@
                             <label>Address additional number</label>
                             <input type="text" name="AddressAdditionalNumber"
                                 [(ngModel)]="customerModel.AddressAdditionalNumber" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.AddressAdditionalNumber?.length || 0 }}/50</div>
                         </div>
                     </div>
                 </div>
@@ -101,19 +109,22 @@
                         <div class="wf-field">
                             <label>Code</label>
                             <input type="text" name="InvoicingCode" [(ngModel)]="customerModel.InvoicingCode"
-                                class="form-control" placeholder="Optional">
+                                class="form-control" placeholder="Optional" maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.InvoicingCode?.length || 0 }}/50</div>
                         </div>
                         <div class="wf-field">
                             <label>Email</label>
                             <input type="email" name="InvoicingEmail"
                                 [(ngModel)]="customerModel.InvoicingEmail" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="100">
+                            <div class="wf-char-count">{{ customerModel.InvoicingEmail?.length || 0 }}/100</div>
                         </div>
                         <div class="wf-field">
                             <label>Phone</label>
                             <input type="text" name="InvoicingPhone"
                                 [(ngModel)]="customerModel.InvoicingPhone" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="50">
+                            <div class="wf-char-count">{{ customerModel.InvoicingPhone?.length || 0 }}/50</div>
                         </div>
                     </div>
                     <div class="wf-grid wf-grid-3">
@@ -121,7 +132,8 @@
                             <label>Contact type number</label>
                             <input type="text" name="ContactTypeNumber"
                                 [(ngModel)]="customerModel.ContactTypeNumber" class="form-control"
-                                placeholder="Optional">
+                                placeholder="Optional" maxlength="100">
+                            <div class="wf-char-count">{{ customerModel.ContactTypeNumber?.length || 0 }}/100</div>
                         </div>
                         <div class="wf-field" *ngIf="selectedId">
                             <label>Status</label>
