@@ -11,7 +11,8 @@
                                 <div class="form-group">
                                     <input type="text" name="BeneficiaryName"
                                         [(ngModel)]="beneficiaryModel.BeneficiaryName" class="form-control"
-                                        placeholder="Enter Beneficiary Name" required>
+                                        placeholder="Enter Beneficiary Name" required maxlength="50">
+                                    <div class="wf-char-count">{{ beneficiaryModel.BeneficiaryName?.length || 0 }}/50</div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 mb-2">
@@ -19,7 +20,8 @@
                                 <div class="form-group">
                                     <input type="text" name="BeneficiaryAddress"
                                         [(ngModel)]="beneficiaryModel.BeneficiaryAddress" class="form-control"
-                                        placeholder="Enter Beneficiary Address">
+                                        placeholder="Enter Beneficiary Address" maxlength="100">
+                                    <div class="wf-char-count">{{ beneficiaryModel.BeneficiaryAddress?.length || 0 }}/100</div>
                                 </div>
                             </div>
                         </div>
@@ -29,14 +31,16 @@
                                 <label class="mb-1">Bank Name</label>
                                 <div class="form-group">
                                     <input type="text" name="BankName" [(ngModel)]="beneficiaryModel.BankName"
-                                        class="form-control" placeholder="Enter Bank Name">
+                                        class="form-control" placeholder="Enter Bank Name" maxlength="50">
+                                    <div class="wf-char-count">{{ beneficiaryModel.BankName?.length || 0 }}/50</div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 mb-2">
                                 <label class="mb-1">Swift</label>
                                 <div class="form-group">
                                     <input type="text" name="Swift" [(ngModel)]="beneficiaryModel.Swift"
-                                        class="form-control" placeholder="Enter Swift Code">
+                                        class="form-control" placeholder="Enter Swift Code" maxlength="50">
+                                    <div class="wf-char-count">{{ beneficiaryModel.Swift?.length || 0 }}/50</div>
                                 </div>
                             </div>
                         </div>
@@ -46,7 +50,8 @@
                                 <label class="mb-1">IBAN</label>
                                 <div class="form-group">
                                     <input type="text" name="IBAN" [(ngModel)]="beneficiaryModel.IBAN"
-                                        class="form-control" placeholder="Enter IBAN">
+                                        class="form-control" placeholder="Enter IBAN" maxlength="50">
+                                    <div class="wf-char-count">{{ beneficiaryModel.IBAN?.length || 0 }}/50</div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 mb-2" *ngIf="selectedId">
