@@ -41,14 +41,16 @@
                                 <label class="mb-1">Selling Price</label>
                                 <div class="form-group">
                                     <input type="number" name="SellingPrice" [(ngModel)]="productModel.SellingPrice"
-                                        class="form-control" placeholder="Enter Selling Price">
+                                        class="form-control" placeholder="Enter Selling Price" maxlength="18">
+                                    <div class="wf-char-count">{{ productModel.SellingPrice != null ? (productModel.SellingPrice + '').length : 0 }}/18</div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 mb-2">
                                 <label class="mb-1">Purchase Cost</label>
                                 <div class="form-group">
                                     <input type="number" name="PurchaseCost" [(ngModel)]="productModel.PurchaseCost"
-                                        class="form-control" placeholder="Enter Purchase Cost">
+                                        class="form-control" placeholder="Enter Purchase Cost" maxlength="18">
+                                    <div class="wf-char-count">{{ productModel.PurchaseCost != null ? (productModel.PurchaseCost + '').length : 0 }}/18</div>
                                 </div>
                             </div>
                         </div>

@@ -14,7 +14,8 @@
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Company Name (English) *</label>
                             <input type="text" class="form-control" name="Title" [(ngModel)]="company.Title"
-                                (ngModelChange)="onNameChange()" required />
+                                (ngModelChange)="onNameChange()" required maxlength="100" />
+                            <div class="wf-char-count">{{ company.Title?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1 d-flex justify-content-between">
@@ -22,7 +23,8 @@
                                 <span class="auto-fill-hint">Auto-filled from English</span>
                             </label>
                             <input type="text" class="form-control" name="ArabicName" [(ngModel)]="company.ArabicName"
-                                (ngModelChange)="onArabicNameEdited()" dir="rtl" />
+                                (ngModelChange)="onArabicNameEdited()" dir="rtl" maxlength="100" />
+                            <div class="wf-char-count">{{ company.ArabicName?.length || 0 }}/100</div>
                         </div>
                     </div>
 
@@ -30,7 +32,8 @@
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Address (English)</label>
                             <textarea class="form-control" rows="2" name="Address" [(ngModel)]="company.Address"
-                                (ngModelChange)="onAddressChange()"></textarea>
+                                (ngModelChange)="onAddressChange()" maxlength="1000"></textarea>
+                            <div class="wf-char-count">{{ company.Address?.length || 0 }}/1000</div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1 d-flex justify-content-between">
@@ -38,37 +41,44 @@
                                 <span class="auto-fill-hint">Auto-filled from English</span>
                             </label>
                             <textarea class="form-control" rows="2" name="ArabicAddress" [(ngModel)]="company.ArabicAddress"
-                                (ngModelChange)="onArabicAddressEdited()" dir="rtl"></textarea>
+                                (ngModelChange)="onArabicAddressEdited()" dir="rtl" maxlength="1000"></textarea>
+                            <div class="wf-char-count">{{ company.ArabicAddress?.length || 0 }}/1000</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">VAT Registration Number</label>
-                            <input type="text" class="form-control" name="VATNumber" [(ngModel)]="company.VATNumber" />
+                            <input type="text" class="form-control" name="VATNumber" [(ngModel)]="company.VATNumber" maxlength="100" />
+                            <div class="wf-char-count">{{ company.VATNumber?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Email</label>
-                            <input type="email" class="form-control" name="Email" [(ngModel)]="company.Email" />
+                            <input type="email" class="form-control" name="Email" [(ngModel)]="company.Email" maxlength="100" />
+                            <div class="wf-char-count">{{ company.Email?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Phone</label>
-                            <input type="text" class="form-control" name="Phone" [(ngModel)]="company.Phone" />
+                            <input type="text" class="form-control" name="Phone" [(ngModel)]="company.Phone" maxlength="50" />
+                            <div class="wf-char-count">{{ company.Phone?.length || 0 }}/50</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Website</label>
-                            <input type="text" class="form-control" name="Website" [(ngModel)]="company.Website" />
+                            <input type="text" class="form-control" name="Website" [(ngModel)]="company.Website" maxlength="100" />
+                            <div class="wf-char-count">{{ company.Website?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Country</label>
-                            <input type="text" class="form-control" name="Country" [(ngModel)]="company.Country" />
+                            <input type="text" class="form-control" name="Country" [(ngModel)]="company.Country" maxlength="100" />
+                            <div class="wf-char-count">{{ company.Country?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">City</label>
-                            <input type="text" class="form-control" name="City" [(ngModel)]="company.City" />
+                            <input type="text" class="form-control" name="City" [(ngModel)]="company.City" maxlength="100" />
+                            <div class="wf-char-count">{{ company.City?.length || 0 }}/100</div>
                         </div>
                     </div>
 
@@ -93,11 +103,13 @@
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Logo Path</label>
-                            <input type="text" class="form-control" name="LogoPath" [(ngModel)]="company.LogoPath" placeholder="https://..." />
+                            <input type="text" class="form-control" name="LogoPath" [(ngModel)]="company.LogoPath" placeholder="https://..." maxlength="500" />
+                            <div class="wf-char-count">{{ company.LogoPath?.length || 0 }}/500</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Stamp URL</label>
-                            <input type="text" class="form-control" name="StampPath" [(ngModel)]="company.StampPath" placeholder="https://..." />
+                            <input type="text" class="form-control" name="StampPath" [(ngModel)]="company.StampPath" placeholder="https://..." maxlength="500" />
+                            <div class="wf-char-count">{{ company.StampPath?.length || 0 }}/500</div>
                         </div>
                     </div>
 
@@ -107,33 +119,39 @@
                     <div class="row">
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Beneficiary Name</label>
-                            <input type="text" class="form-control" name="BeneficiaryName" [(ngModel)]="company.BeneficiaryName" />
+                            <input type="text" class="form-control" name="BeneficiaryName" [(ngModel)]="company.BeneficiaryName" maxlength="255" />
+                            <div class="wf-char-count">{{ company.BeneficiaryName?.length || 0 }}/255</div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="mb-1">Bank Name</label>
-                            <input type="text" class="form-control" name="BankName" [(ngModel)]="company.BankName" />
+                            <input type="text" class="form-control" name="BankName" [(ngModel)]="company.BankName" maxlength="255" />
+                            <div class="wf-char-count">{{ company.BankName?.length || 0 }}/255</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Account Currency</label>
-                            <input type="text" class="form-control" name="AccountCurrency" [(ngModel)]="company.AccountCurrency" placeholder="SAUDI RIYAL" />
+                            <input type="text" class="form-control" name="AccountCurrency" [(ngModel)]="company.AccountCurrency" placeholder="SAUDI RIYAL" maxlength="50" />
+                            <div class="wf-char-count">{{ company.AccountCurrency?.length || 0 }}/50</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">Account Number</label>
-                            <input type="text" class="form-control" name="BankAccountNumber" [(ngModel)]="company.BankAccountNumber" />
+                            <input type="text" class="form-control" name="BankAccountNumber" [(ngModel)]="company.BankAccountNumber" maxlength="100" />
+                            <div class="wf-char-count">{{ company.BankAccountNumber?.length || 0 }}/100</div>
                         </div>
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">IBAN</label>
-                            <input type="text" class="form-control" name="IBAN" [(ngModel)]="company.IBAN" />
+                            <input type="text" class="form-control" name="IBAN" [(ngModel)]="company.IBAN" maxlength="100" />
+                            <div class="wf-char-count">{{ company.IBAN?.length || 0 }}/100</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-4 mb-3">
                             <label class="mb-1">SWIFT Code</label>
-                            <input type="text" class="form-control" name="SwiftCode" [(ngModel)]="company.SwiftCode" />
+                            <input type="text" class="form-control" name="SwiftCode" [(ngModel)]="company.SwiftCode" maxlength="50" />
+                            <div class="wf-char-count">{{ company.SwiftCode?.length || 0 }}/50</div>
                         </div>
                     </div>
 
