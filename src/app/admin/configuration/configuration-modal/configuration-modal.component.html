@@ -5,7 +5,8 @@
             <label class="mb-1">{{ typeInfo.singular }} Title <span class="text-danger">*</span></label>
             <div class="form-group">
                 <input type="text" name="Title" [(ngModel)]="itemModel.Title" class="form-control"
-                    [placeholder]="'Enter ' + typeInfo.singular + ' Title'" required autofocus>
+                    [placeholder]="'Enter ' + typeInfo.singular + ' Title'" required autofocus maxlength="100">
+                <div class="wf-char-count">{{ itemModel.Title?.length || 0 }}/100</div>
             </div>
         </div>
 
