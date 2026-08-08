@@ -18,6 +18,7 @@ import { Invoice } from '../../shared/models/invoice.model';
 export class InvoicesComponent {
   invoices: Invoice[] = [];
   isLoading: boolean = false;
+  downloadingPdfIds = new Set<number>();
 
   searchText: string = '';
   statusFilter: string = '';
@@ -101,9 +102,30 @@ export class InvoicesComponent {
     this.router.navigate(['/invoices/edit', id]);
   }
 
-  downloadPdf(id: number) {
-    const url = this.api.getDownloadPdfUrl(id);
-    window.open(url, '_blank');
+  isDownloadingPdf(id: number): boolean {
+    return this.downloadingPdfIds.has(id);
+  }
+
+  async downloadPdf(id: number) {
+    if (this.downloadingPdfIds.has(id)) return;
+    this.downloadingPdfIds.add(id);
+    try {
+      const blob = await this.api.DownloadPdf(id);
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Invoice-${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('PDF download error:', error);
+    } finally {
+      this.downloadingPdfIds.delete(id);
+    }
   }
 
   openDeleteModal(id: number) {

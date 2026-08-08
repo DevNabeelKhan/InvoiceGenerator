@@ -66,7 +66,10 @@
                                 <a href="javascript:;" (click)="editInvoice(item.Id!)"
                                     class="row-action-btn" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 <a href="javascript:;" (click)="downloadPdf(item.Id!)"
-                                    class="row-action-btn" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></a>
+                                    class="row-action-btn" title="Download PDF">
+                                    <i class="fa-solid fa-file-pdf" *ngIf="!isDownloadingPdf(item.Id!)"></i>
+                                    <i class="fa-solid fa-spinner fa-spin" *ngIf="isDownloadingPdf(item.Id!)"></i>
+                                </a>
                                 <a href="javascript:;" (click)="openDeleteModal(item.Id!)"
                                     class="row-action-btn danger" title="Delete"><i class="fa-solid fa-trash"></i></a>
                             </td>

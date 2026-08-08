@@ -187,6 +187,15 @@ export class InvoiceApiService {
     return `${(this.httpService as any).baseUrl}/${this.controller}/DownloadPdf?Id=${Id}`;
   }
 
+  async DownloadPdf(Id: number): Promise<Blob | undefined> {
+    try {
+      return await this.httpService.downloadBlob(`${this.controller}/DownloadPdf`, { Id });
+    } catch (err: any) {
+      this.alert.Error(err.statusText || 'PDF download failed');
+    }
+    return undefined;
+  }
+
   getGenerateXmlUrl(Id: number): string {
     return `${(this.httpService as any).baseUrl}/${this.controller}/GenerateXml?Id=${Id}`;
   }

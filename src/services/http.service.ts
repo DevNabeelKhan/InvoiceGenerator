@@ -81,4 +81,11 @@ export class HttpService {
     const observable = this.http.delete<T>(`${this.baseUrl}/${endpoint}`, options);
     return await firstValueFrom(observable.pipe(catchError(this.handleError)));
   }
+
+  async downloadBlob(endpoint: string, queryParams?: any): Promise<Blob> {
+    let customHeaders = this.setHeaders();
+    const options = { params: queryParams, headers: customHeaders, responseType: 'blob' as 'blob' };
+    const observable = this.http.get(`${this.baseUrl}/${endpoint}`, options);
+    return await firstValueFrom(observable.pipe(catchError(this.handleError)));
+  }
 }
