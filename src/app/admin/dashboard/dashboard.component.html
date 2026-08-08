@@ -24,31 +24,22 @@
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-lg-8">
-                    <div class="module-page-card mb-0 h-100">
+                <div class="col-lg-12">
+                    <div class="module-page-card mb-0">
                         <h5 class="module-title mb-3" style="font-size: 15px;">Revenue Trend (Last 7 Months)</h5>
-                        <ngx-charts-line-chart
-                            [view]="lineChartView"
-                            [results]="[{ name: 'Revenue', series: revenueTrend }]"
-                            [scheme]="colorScheme"
-                            [xAxis]="true"
-                            [yAxis]="true"
-                            [showXAxisLabel]="false"
-                            [showYAxisLabel]="false"
-                            [autoScale]="true">
-                        </ngx-charts-line-chart>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="module-page-card mb-0 h-100">
-                        <h5 class="module-title mb-3" style="font-size: 15px;">Module Distribution</h5>
-                        <ngx-charts-pie-chart
-                            [view]="pieChartView"
-                            [results]="moduleDistribution"
-                            [scheme]="colorScheme"
-                            [labels]="true"
-                            [doughnut]="true">
-                        </ngx-charts-pie-chart>
+                        <div class="revenue-chart-wrapper" style="height: 280px;">
+                            <ngx-charts-line-chart
+                                [results]="[{ name: 'Revenue', series: revenueTrend }]"
+                                [scheme]="colorScheme"
+                                [xAxis]="true"
+                                [yAxis]="true"
+                                [showXAxisLabel]="false"
+                                [showYAxisLabel]="false"
+                                [autoScale]="true">
+                            </ngx-charts-line-chart>
+                        </div>
+
+
                     </div>
                 </div>
             </div>

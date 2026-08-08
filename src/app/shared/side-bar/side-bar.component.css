@@ -167,6 +167,8 @@
   font-size: 18px;
   color: #444;
   cursor: pointer;
+  padding: 0;
+  line-height: 1;
 }
 
 .topbar-search {
@@ -176,7 +178,25 @@
   background: #f3f4f6;
   border-radius: 8px;
   padding: 8px 14px;
-  min-width: 320px;
+  flex: 1;
+  max-width: 520px;
+}
+
+.app-topbar .toggle-btn {
+  color: #6b7280;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.app-topbar .toggle-btn:hover {
+  background-color: #e5e7eb;
+  color: #374151;
 }
 
 .topbar-search i {
@@ -192,7 +212,7 @@
   font-size: 14px;
 }
 
-body.sidebar-closed .app-topbar {
+:host-context(.sidebar-closed) .app-topbar {
   left: 0;
 }
 

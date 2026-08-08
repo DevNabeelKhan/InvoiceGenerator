@@ -29,18 +29,9 @@ export class DashboardComponent {
     { name: 'Jul', value: 58500 },
   ];
 
-  moduleDistribution = [
-    { name: 'Customers', value: 124 },
-    { name: 'Beneficiaries', value: 38 },
-    { name: 'Products', value: 210 },
-  ];
-
   colorScheme: any = {
     domain: ['#4f6ef7', '#12b76a', '#f79009', '#7a5af8', '#f04438']
   };
-
-  lineChartView: [number, number] = [700, 280];
-  pieChartView: [number, number] = [380, 280];
 
   recentCustomers = [
     { Code: 'CUST-0001', Name: 'Al Noor Trading Co.', Email: 'info@alnoor.sa', Balance: '12,500.00', Status: true },
