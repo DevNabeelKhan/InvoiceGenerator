@@ -927,6 +927,10 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.invoice.Draft = status === 'Draft';
       this.invoice.Approved = status === 'Approved';
 
+      if (status === 'Approved' && this.invoiceId) {
+        await this.regenerateQr();
+      }
+
       const payload: any = {
         ...this.invoice,
         Products: this.lines
@@ -955,7 +959,9 @@ export class InvoiceEditComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const res: any = await this.api.GenerateQr(this.invoiceId);
       if (res?.statusCode == 200 && res.data) {
-        this.qrImageBase64 = res.data.qrImageBase64 || res.data.QrImageBase64;
+        this.invoice.GeneratedQRCode = res.data.tlvBase64 || res.data.TlvBase64 || null;
+        this.invoice.QRCodeImagePath = res.data.qrImageBase64 || res.data.QrImageBase64 || null;
+        this.qrImageBase64 = this.invoice.QRCodeImagePath ?? null;
       } else {
         this.toastr.error(res?.message || 'Failed to generate QR code');
       }
